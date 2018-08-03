@@ -1,0 +1,45 @@
+<data-sources>
+
+    <!--<base-source id="ds1" url="mysql://101.201.35.123:3306/{db-name}"-->
+                 <!--user-name="root" password="root" driver-class="com.mysql.jdbc.Driver"/>-->
+
+    <base-source id="docker-1" url="jdbc:mysql://localhost:3306/{db-name}"
+                 user-name="root" password="root" driver-class="com.mysql.jdbc.Driver">
+        <data-source db-name="crawler_database" count="3456"/>
+        <data-source db-name="crawler_database2" count="366456"/>
+        <data-source db-name="crawler_database3" count="3453436"/>
+        <data-source db-name="crawler_database4" count="345566"/>
+        <data-source db-name="crawler_database5" count="34656"/>
+        <data-source db-name="crawler_database6" count="34556"/>
+    </base-source>
+    <base-source id="docker-2" url="jdbc:mysql://172.17.238.11:49527/{db-name}"
+                 user-name="root" password="crawler@20184wz" driver-class="com.mysql.jdbc.Driver">
+        <data-source db-name="db13" count="345600"/>
+        <data-source db-name="db12" count="34560"/>
+        <data-source db-name="db11" count="3045600"/>
+        <data-source db-name="db15" count="34056"/>
+        <data-source db-name="db20" count="345006"/>
+
+    </base-source>
+    <base-source id="docker-3" url="jdbc:mysql://localhost:3306/{db-name}"
+                 user-name="root" password="root" driver-class="com.mysql.jdbc.Driver">
+        <data-source db-name="crawler_database" count="340056"/>
+        <data-source db-name="crawler_database2" count="34056"/>
+        <data-source db-name="crawler_database3" count="345060"/>
+        <data-source db-name="crawler_database4" count="3405006"/>
+        <data-source db-name="crawler_database5" count="340560"/>
+        <data-source db-name="crawler_database6" count="30405060"/>
+    </base-source>
+
+    <!--<data-source db-name="db2" base-source="ds1"/>-->
+    <!--<data-source db-name="db3" base-source="ds1"/>-->
+    <!--<data-source db-name="db4" base-source="ds1"/>-->
+    <!--<data-source db-name="db5" base-source="ds1"/>-->
+    <!--<data-source db-name="db6" base-source="ds1"/>-->
+    <!--<data-source db-name="db7" base-source="ds1"/>-->
+    <!--<data-source db-name="db8" base-source="ds1"/>-->
+    <!--<data-source db-name="db9" base-source="ds1"/>-->
+    <!--<data-source db-name="db10" base-source="ds1"/>-->
+
+
+</data-sources>
