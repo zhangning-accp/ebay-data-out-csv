@@ -16,7 +16,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>$Title$</title>
+    <title>导出</title>
       <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
       <link href="css/button.css" rel="stylesheet">
       <link href="http://www.bootcss.com/p/layoutit/css/layoutit.css" rel="stylesheet">
@@ -198,27 +198,27 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <%
-                      List<File> files = Utils.files(ApplicationCache.DEFAULT_CSV_FILE_PATH);
-                      for(File file : files) {
-                          String fileName = file.getName();
-                          String downloadUrl = "export/" + file.getName();
-                          String date = new Date(file.lastModified()).toLocaleString();
-                          String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));
-                          double length = file.length() / 1024;
-                  %>
-                        <tr>
-                            <td>
-                                <a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>
-                            </td>
-                            <td><%=date%></td>
-                            <td><%=count%></td>
-                            <td>
-                                <a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>
-                            </td>
-                        </tr>
+                  <%--<%--%>
+                      <%--List<File> files = Utils.allFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);--%>
+                      <%--for(File file : files) {--%>
+                          <%--String fileName = file.getName();--%>
+                          <%--String downloadUrl = "export/" + file.getName();--%>
+                          <%--String date = new Date(file.lastModified()).toLocaleString();--%>
+                          <%--String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));--%>
+                          <%--double length = file.length() / 1024;--%>
+                  <%--%>--%>
+                        <%--<tr>--%>
+                            <%--<td>--%>
+                                <%--<a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>--%>
+                            <%--</td>--%>
+                            <%--<td><%=date%></td>--%>
+                            <%--<td><%=count%></td>--%>
+                            <%--<td>--%>
+                                <%--<a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>--%>
+                            <%--</td>--%>
+                        <%--</tr>--%>
 
-                      <%}%>
+                      <%--<%}%>--%>
                   </tbody>
               </table>-
           </div>

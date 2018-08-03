@@ -21,10 +21,13 @@ public class CsvOut {
         saveDataToCsv(details,filePath);
     }
 
-    private static void saveDataToCsv(List<ECommerceProductDetail> details,String filePath) {
+    public static void saveDataToCsv(List<ECommerceProductDetail> details,String filePath) {
         String[] heads = {"产品名称", "产品长描述", "产品图片", "产品特价", "产品原始价格",
                 "属性1", "属性2", "属性3", "分类", "主图备用", "pageUrl"};
-
+        File f = new File(filePath);
+        if(!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
         StringBuffer buffer = new StringBuffer();
         for(String head : heads) {
             buffer.append(head + ",");

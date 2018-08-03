@@ -83,13 +83,30 @@
           if(dbName.length < 1) {
               alert("请选择一个库!");
               obj.disabled = false;
-              return;
+              return false;
           }
           if(dbName.length > 4) {
               alert("只能选择4个库，您选择了" + dbName.length);
               obj.disabled = false;
-              return;
+              return false;
           }
+          // 发送ajax请求
+          var parameter = "action=batch";
+          for(i = 0; i < dbName.length; i ++) {
+              parameter += "&dbName=" + dbName[i].value;
+          }
+
+          $.get("home.jsp",parameter,function(data){
+              alert("服务器已接受到导出任务.预计完成时间11 h");
+//              var file = data;
+//              var fileName = data.substring(file.indexOf("/") + 1);
+//              var nodeA = $("#file")
+//              nodeA.attr("href",file);
+//              nodeA.html(fileName);
+//              progress.children("div:first-child").css("width","100%");
+//              progress.children("div:first-child").children("div:first-child").html("100%");
+//              obj.disabled = false;
+          });
       }
 
       /**
@@ -123,8 +140,9 @@
                           Iterator<String> iterator = dataSourceString.keySet().iterator();
                           while(iterator.hasNext()) {
                               String key = iterator.next();%>
-                      <span class="help-block">数据库服务器：<%=key%></span>
                       <hr>
+                      <span class="help-block">数据库服务器：<%=key%></span>
+
                       <div style="border:1px;">
                          <%
                             List<DataSource> dataSources = dataSourceString.get(key);
@@ -135,7 +153,7 @@
                              <%}%>
                       <button class="button button-primary button-rounded button-small" onclick="outData(this)">导出数据</button>
                   </fieldset>
-              </form>
+              <%--</form>--%>
                   <div class="alert alert-success" role="alert">
                       系统默认2w个数据一个csv文件，并会每50个csv文件压缩成一个zip文件供下载使用
                   </div>
@@ -158,29 +176,29 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <%
-                      List<File> files = Utils.files(ApplicationCache.DEFAULT_CSV_FILE_PATH);
-                      for(File file : files) {
-                          String fileName = file.getName();
-                          String downloadUrl = "export/" + file.getName();
-                          String date = new Date(file.lastModified()).toLocaleString();
-                          String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));
-                          double length = file.length() / 1024;
-                  %>
-                        <tr>
-                            <td>
-                                <a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>
-                            </td>
-                            <td><%=date%></td>
-                            <td><%=count%></td>
-                            <td>
-                                <a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>
-                            </td>
-                        </tr>
+                  <%--<%--%>
+                      <%--List<File> files = Utils.allFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);--%>
+                      <%--for(File file : files) {--%>
+                          <%--String fileName = file.getName();--%>
+                          <%--String downloadUrl = "export/" + file.getName();--%>
+                          <%--String date = new Date(file.lastModified()).toLocaleString();--%>
+                          <%--String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));--%>
+                          <%--double length = file.length() / 1024;--%>
+                  <%--%>--%>
+                        <%--<tr>--%>
+                            <%--<td>--%>
+                                <%--<a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>--%>
+                            <%--</td>--%>
+                            <%--<td><%=date%></td>--%>
+                            <%--<td><%=count%></td>--%>
+                            <%--<td>--%>
+                                <%--<a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>--%>
+                            <%--</td>--%>
+                        <%--</tr>--%>
 
-                      <%}%>
+                      <%--<%}%>--%>
                   </tbody>
-              </table>-
+              </table>
           </div>
           <div class="span4">
           </div>

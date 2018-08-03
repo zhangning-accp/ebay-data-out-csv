@@ -58,7 +58,9 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
                 case "batch":
                     String [] names = request.getParameterValues("dbName");
                     for(String db : names) {
-
+                        Thread thread = new Thread(new BatchExportDataThread(db));
+                        thread.setName("batch-export-data-thread-" + db );
+                        thread.start();
                     }
                     break;
             }
