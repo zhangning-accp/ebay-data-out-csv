@@ -427,7 +427,7 @@ public class Utils extends StringUtils {
                 String fileName = file.substring(file.lastIndexOf(File.separator) + 1);
                 zipOutputStream.putNextEntry(new ZipEntry(fileName));
                 try (FileInputStream inputStream = new FileInputStream(src);) {
-                    byte[] data = new byte[128];
+                    byte[] data = new byte[(int)src.length()];
                     while (inputStream.read(data) != -1) {
                         zipOutputStream.write(data);
                     }

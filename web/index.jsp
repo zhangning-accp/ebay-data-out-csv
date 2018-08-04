@@ -16,12 +16,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>导出</title>
+    <title>批量导出</title>
       <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
       <link href="css/button.css" rel="stylesheet">
       <link href="http://www.bootcss.com/p/layoutit/css/layoutit.css" rel="stylesheet">
-      <%--<link href="http://www.bootcss.com/p/layoutit/css/bootstrap-combined.min.css" rel="stylesheet">--%>
-
       <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
       <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
 
@@ -81,46 +79,32 @@
   <script type="application/javascript">
       function outData(obj) {
           obj.disabled = true;
-          var dbName = $("input[name='dbName']:checked").val();
-
-          if(isEmpty(dbName)) {
+          var dbName = $("input[name='dbName']:checked");
+          if(dbName.length < 1) {
               alert("请选择一个库!");
               obj.disabled = false;
-              return;
+              return false;
           }
-          var startIndex = $("#startIndex")[0].value;
-          var repx = /^\d+$/;
-          if(!repx.test(startIndex)) {
-              alert("开始位置必须是整数，请重新输入!");
-              $("#startIndex")[0].focus();
+          if(dbName.length > 2) {
+              alert("只能选择2个库，您选择了" + dbName.length);
               obj.disabled = false;
-              return;
+              return false;
           }
-          var count = $("#count")[0].value
-          if(!repx.test(count)) {
-              alert("导出条数必须是整数，请重新输入!");
-              $("#count")[0].focus();
-              obj.disabled = false;
-              return;
+          // 发送ajax请求
+          var parameter = "action=batch";
+          for(i = 0; i < dbName.length; i ++) {
+              parameter += "&dbName=" + dbName[i].value;
           }
-//          if(count > 20000) {
-//              alert("导出条数不能超过20000，请重新输入!");
-//          }
-          var progress = $("#progress");
-          progress.show();
-          progress.children("div:first-child").css("width","0%");
-          progress.children("div:first-child").children("div:first-child").html("0%");
-          var parameter = "action=out_data&startIndex=" + startIndex + "&count=" + count + "&dbName=" + dbName;
           $.get("home.jsp",parameter,function(data){
-              //alert(data);
-              var file = data;
-              var fileName = data.substring(file.indexOf("/") + 1);
-              var nodeA = $("#file")
-              nodeA.attr("href",file);
-              nodeA.html(fileName);
-              progress.children("div:first-child").css("width","100%");
-              progress.children("div:first-child").children("div:first-child").html("100%");
-              obj.disabled = false;
+              alert("服务器已接受到导出任务.预计完成时间11 h");
+//              var file = data;
+//              var fileName = data.substring(file.indexOf("/") + 1);
+//              var nodeA = $("#file")
+//              nodeA.attr("href",file);
+//              nodeA.html(fileName);
+//              progress.children("div:first-child").css("width","100%");
+//              progress.children("div:first-child").children("div:first-child").html("100%");
+//              obj.disabled = false;
           });
       }
 
@@ -138,8 +122,8 @@
   </script>
   <div class="list-group">
       <a href="#" class="list-group-item active">
-          <h4 class="list-group-item-heading">欢迎使用Ebay 数据导出功能</h4>
-          <p class="list-group-item-text">该网页提供方便快捷的数据导出,系统会默认记录上次导出的库，并选中，同时会根据上次导出的数据计算出这次开始的条数。如果不采用，可人工修改</p>
+          <h4 class="list-group-item-heading">欢迎使用Ebay 批量数据导出功能</h4>
+          <p class="list-group-item-text">该网页提供方便快捷的数据导出,选择需要导出的数据库即可，一次最多只能选择2个库</p>
       </a>
   </div>
   <div class="container-fluid">
@@ -155,42 +139,35 @@
                           Iterator<String> iterator = dataSourceString.keySet().iterator();
                           while(iterator.hasNext()) {
                               String key = iterator.next();%>
+                      <hr>
                       <span class="help-block">数据库服务器：<%=key%></span>
+
                       <div style="border:1px;">
                          <%
                             List<DataSource> dataSources = dataSourceString.get(key);
                              for(DataSource source : dataSources) {%>
-                      <input type="radio" name="dbName" value="<%=source.getFullDbName()%>"/> <%=source.getDbName() + "[" + source.getCount() + "]" %>
+                      <input type="checkbox" name="dbName" value="<%=source.getFullDbName()%>"/> <%=source.getDbName() + "[" + source.getCount() + "]" %>
                              <%}%>
                       </div>
                              <%}%>
-                      <label>从第几条开始:&nbsp</label><input type="text" id="startIndex" value="0"/>
-                      <label>导出数据条数:&nbsp</label><input type="text" value="20000" id="count"/></label>
                       <button class="button button-primary button-rounded button-small" onclick="outData(this)">导出数据</button>
                   </fieldset>
               <%--</form>--%>
-                  <%--<div class="alert alert-info" role="alert">正在连接数据库..... 正在导出成文件....正在压缩csv文件</div>--%>
-              <div class="progress" style="display: none" id="progress">
-                      <div class="progress-bar progress-bar-info progress-bar-striped active" style="width:0%">
-                          <div class="progress-value">0%</div>
-                      </div>
-                  <div style="height: 25px"></div>
-              </div>
                   <div class="alert alert-success" role="alert">
-                      文件下载地址：<span><a href="#" id="file"></a></span>
+                      系统默认2w个数据一个csv文件，并会每50个csv文件压缩成一个zip文件供下载使用
                   </div>
-              <span class="help-block">历史导出记录</span>
+              <span class="help-block">导出记录</span>
               <table class="table">
                   <thead>
                   <tr>
                       <th>
-                          文件地址
+                          数据库
+                      </th>
+                      <th>
+                          文件名(KB)
                       </th>
                       <th>
                           导出时间
-                      </th>
-                      <th>
-                          导出数量
                       </th>
                       <th>
                           操作
@@ -198,29 +175,40 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <%--<%--%>
-                      <%--List<File> files = Utils.allFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);--%>
-                      <%--for(File file : files) {--%>
-                          <%--String fileName = file.getName();--%>
-                          <%--String downloadUrl = "export/" + file.getName();--%>
-                          <%--String date = new Date(file.lastModified()).toLocaleString();--%>
-                          <%--String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));--%>
-                          <%--double length = file.length() / 1024;--%>
-                  <%--%>--%>
-                        <%--<tr>--%>
-                            <%--<td>--%>
-                                <%--<a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>--%>
-                            <%--</td>--%>
-                            <%--<td><%=date%></td>--%>
-                            <%--<td><%=count%></td>--%>
-                            <%--<td>--%>
-                                <%--<a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>--%>
-                            <%--</td>--%>
-                        <%--</tr>--%>
+                  <%
+                      Map<String,List<File>> fileMap = Utils.getZipFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);
+                      System.out.println("map:" + fileMap);
+                      Iterator<String> iteratorkeys = fileMap.keySet().iterator();
+                      while(iteratorkeys.hasNext()) {
+                          String key = iteratorkeys.next();
+                          List<File> files = fileMap.get(key);
+                          for(int i = 0; i < files.size(); i ++) {
+                              File file = files.get(i);
+                              String fileName = file.getName();
+                              String downloadUrl = file.getAbsolutePath().replace(ApplicationCache.REAL_PATH,"");
+                              String date = new Date(file.lastModified()).toLocaleString();
+                              double length = file.length() / 1024;
+                              if(i > 0) {
+                                  key = "";
+                              }
+                  %>
+                  <tr>
+                      <td>
+                          <%=key%>
+                      </td>
+                      <td>
+                          <a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>
+                      </td>
+                      <td><%=date%></td>
+                      <td>
+                          <a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>
+                      </td>
+                  </tr>
 
-                      <%--<%}%>--%>
+                  <%}}%>
+
                   </tbody>
-              </table>-
+              </table>
           </div>
           <div class="span4">
           </div>

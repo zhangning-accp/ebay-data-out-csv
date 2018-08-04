@@ -31,8 +31,9 @@ public class BatchExportDataThread implements Runnable {
     }
     @Override
     public void run() {
+        int id = 0;
         //每50个打包一个zip
-        String zipFolder = Utils.getRelativeFilePathByFullDBName(dbName);
+        String zipFolder = ApplicationCache.DEFAULT_CSV_FILE_PATH + Utils.getRelativeFilePathByFullDBName(dbName);
         File file = new File(zipFolder);
         if(!file.exists()) {
             file.mkdirs();
@@ -45,17 +46,17 @@ public class BatchExportDataThread implements Runnable {
         //先获取min 和 max.
         int minSortIndex = minMax[0];
         int maxSortIndex = minMax[1];
-        int count = 233;
+        int count = 20000;
         int start = minSortIndex;
         int to = start + count;
         List<ECommerceProductDetail> list = null;
         while(true) {// 当start + count > maxSortIndex 循环结束
-            log.info("从数据库 {} 获取数据",dbName);
+            log.info("从数据库 {} 获取数据，start:{}, to:{}",dbName,start,to);
             list = dao.findProductNameIsNotNullProductsBySortIndex(start,to);
-            log.info("从数据库 {} 获取数据完毕，数量:{},开始导出为csv文件",list.size());
+            log.info("从数据库获取数据完毕，数量:{},开始导出为csv文件",list.size());
             if(list != null && list.size() > 0) {
                 Date date = new Date();
-                String fileName = zipFolder + format.format(date) + ".csv";
+                String fileName = zipFolder + format.format(date) + "-" + id + ".csv";
                 CsvOut.saveDataToCsv(list, fileName);
                 log.info("导出csv文件成功，文件信息：{}",fileName);
             }
@@ -64,9 +65,8 @@ public class BatchExportDataThread implements Runnable {
             }
             start += count;
             to = start + count;
-            log.info("从数据库 {} 获取数据",dbName);
+            id ++;
             list.clear();
-            log.info("从数据库 {} 获取数据完毕，数量:{},开始导出为csv文件",list.size());
         }
         //2. 读取目录下的文件，
         List<File> csvFiles = Utils.csvFiles(zipFolder);
@@ -79,10 +79,11 @@ public class BatchExportDataThread implements Runnable {
             log.info("开始将csv压缩成zip...");
             Utils.csvToZip(zipFolder, csvFiles, 50);
             //---- 压缩结束 ----
-            // 删除csv文件
+             //删除csv文件
             for (File f : csvFiles) {
                 f.delete();
             }
         }
+        log.info("export {} data finished... datatime:{}",dbName,format.format(new Date()));
     }
 }
