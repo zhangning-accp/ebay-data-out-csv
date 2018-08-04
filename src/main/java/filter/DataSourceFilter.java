@@ -28,7 +28,7 @@ public class DataSourceFilter implements Filter {
         ServletContext application = config.getServletContext();
         String realPath = application.getRealPath("/");
 
-
+        ApplicationCache.REAL_PATH = realPath;
         ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH = realPath + "WEB-INF/classes/data-source.xml";
         ApplicationCache.DEFAULT_CSV_FILE_PATH = realPath + File.separator + "export" + File.separator;
 

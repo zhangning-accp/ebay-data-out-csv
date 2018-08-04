@@ -528,7 +528,7 @@ public class Utils extends StringUtils {
      * |_ db_name
      * |_db_server-db_name-time-s-e.zip
      */
-    public static Map<String, List<File>> getFiles(String folder) {
+    public static Map<String, List<File>> getZipFiles(String folder) {
         File file = new File(folder);
         Map<String, List<File>> map = new HashMap<>();
         if (file.isDirectory()) {
@@ -553,13 +553,40 @@ public class Utils extends StringUtils {
                             for (File zip : zips) {
                                 list.add(zip);
                             }
-                            map.put(key, list);
+                            map.put(key, list.stream().sorted((f1,f2)->{
+                                Long d1 = f1.lastModified();
+                                Long d2 = f2.lastModified();
+                                return d2.compareTo(d1);
+                            }).collect(Collectors.toList()));
                         }
                     }
                 }
             }
         }
         return map;
+    }
+
+    public static List<File> csvFiles(String csvFolder) {
+        File file = new File(csvFolder);
+        List<File> fileList = new ArrayList<>();
+        if (file.isDirectory()) {
+            File[] files = file.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isFile() && pathname.getName().endsWith("csv");
+                }
+            });
+            for (File f : files) {
+                fileList.add(f);
+            }
+        }
+        fileList = fileList.stream().sorted((f1, f2) -> {
+            Long d1 = f1.lastModified();
+            Long d2 = f2.lastModified();
+            return d2.compareTo(d1);
+        }).collect(Collectors.toList());
+
+        return fileList;
     }
 
     public static List<File> allFiles(String folder) {
@@ -586,6 +613,17 @@ public class Utils extends StringUtils {
     }
 
     /**
+     * 根据完整的数据库名，返回一个相对路径。路径最左边没有/,最右边有/,但/根据不同的系统，采用不同的符号，如windows上就是\。如 docker-1/db20/
+     *@param fullDBName: 格式 server_id.db_name.如 doceker-1.db20
+     */
+    public static String getRelativeFilePathByFullDBName(String fullDBName) {
+        String server = fullDBName.substring(0,fullDBName.indexOf("."));
+        String dbName = fullDBName.substring(fullDBName.indexOf(".") + 1);
+
+        return server + File.separator + dbName + File.separator;
+
+    }
+    /**
      *
      * @param zipFolder zip文件所在的目录，必须要有/结尾。 如C:/export/docker-1/db1_1/
      * @param csvFiles 需要压缩的csv文件集合
@@ -594,6 +632,9 @@ public class Utils extends StringUtils {
      *
      */
     public static void csvToZip(String zipFolder,List<File> csvFiles,int rows) {
+        if(csvFiles == null || csvFiles.size() < 1) {
+            return;
+        }
         File zipFile = new File(zipFolder);
         if(!zipFile.exists()) {
             zipFile.mkdirs();
@@ -628,6 +669,7 @@ public class Utils extends StringUtils {
         }
 
     }
+
     private static void testCsvToZip() {
         String base = "d:/export/docker-1/db1_1/";
         List<File> csvFiles = Utils.allFiles(base).stream()
@@ -637,6 +679,8 @@ public class Utils extends StringUtils {
 
     public static void main(String[] args) {
         //Utils.mkdirsByFullDBName("C:/export","docker-1.db1_1","docker-1.db1_2","docker-1.db1_3","docker-2.db1_1");
-        Utils.testCsvToZip();
+        //Utils.testCsvToZip();
+        Map<String,List<File>> map = Utils.getZipFiles("D:\\project\\idea\\ebay-data-out-csv\\out\\artifacts\\ebay_data_out_csv_war_exploded\\export");
+        System.out.println(map);
     }
 }

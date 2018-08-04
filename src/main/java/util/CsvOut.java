@@ -13,13 +13,13 @@ import java.util.List;
  */
 @Slf4j
 public class CsvOut {
-    public static void saveDataToCsv(int startLimit,int count,String filePath,String dabaseName) {
-        ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dabaseName);
-        ApplicationCache.PROGRESS_BAR.add("正在读取数据库数据");
-        List<ECommerceProductDetail> details = dao.findProductByLimit(startLimit,count);
-
-        saveDataToCsv(details,filePath);
-    }
+//    public static void saveDataToCsv(int startLimit,int count,String filePath,String dabaseName) {
+//        ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dabaseName);
+//        ApplicationCache.PROGRESS_BAR.add("正在读取数据库数据");
+//        List<ECommerceProductDetail> details = dao.findProductNameIsNotNullProductsBySortIndex(startLimit,count);
+//
+//        saveDataToCsv(details,filePath);
+//    }
 
     public static void saveDataToCsv(List<ECommerceProductDetail> details,String filePath) {
         String[] heads = {"产品名称", "产品长描述", "产品图片", "产品特价", "产品原始价格",

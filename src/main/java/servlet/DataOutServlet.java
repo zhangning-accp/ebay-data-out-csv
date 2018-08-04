@@ -25,31 +25,31 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
             PrintWriter out = response.getWriter();
             log.info("action:{}",action);
             switch (action) {
-                case "out_data":
-                    String dbName = request.getParameter("dbName");
-                    int startIndex = Integer.parseInt(request.getParameter("startIndex"));
-                    int count = Integer.parseInt(request.getParameter("count"));
-                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-                    Date date = new Date();
-                    String fileName = ApplicationCache.DEFAULT_CSV_FILE_PATH + format.format(date) + ".csv";
-                    try {
-                        CsvOut.saveDataToCsv(startIndex, count, fileName, dbName);
-                        String zipFileName = fileName.substring(0,fileName.lastIndexOf(".")) + "-" + count + ".zip";
-                        log.info("Extracting files. Please wait ...");
-                        ApplicationCache.PROGRESS_BAR.add("Extracting files. Please wait ....");
-                        Utils.zip(fileName,zipFileName);
-                        File file = new File(fileName);
-                        file.delete();
-                        zipFileName = zipFileName.substring(zipFileName.lastIndexOf("/") + 1);
-                        ApplicationCache.PROGRESS_BAR.add("Compressed file completion ....");
-                        log.info("out_data,startIndex:{},count:{}", startIndex, count);
-                        out.write("export/" + zipFileName);
-                                return;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        out.write("error: export data error." + e);
-                        return;
-                    }
+//                case "out_data":
+//                    String dbName = request.getParameter("dbName");
+//                    int startIndex = Integer.parseInt(request.getParameter("startIndex"));
+//                    int count = Integer.parseInt(request.getParameter("count"));
+//                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+//                    Date date = new Date();
+//                    String fileName = ApplicationCache.DEFAULT_CSV_FILE_PATH + format.format(date) + ".csv";
+//                    try {
+//                        CsvOut.saveDataToCsv(startIndex, count, fileName, dbName);
+//                        String zipFileName = fileName.substring(0,fileName.lastIndexOf(".")) + "-" + count + ".zip";
+//                        log.info("Extracting files. Please wait ...");
+//                        ApplicationCache.PROGRESS_BAR.add("Extracting files. Please wait ....");
+//                        Utils.zip(fileName,zipFileName);
+//                        File file = new File(fileName);
+//                        file.delete();
+//                        zipFileName = zipFileName.substring(zipFileName.lastIndexOf("/") + 1);
+//                        ApplicationCache.PROGRESS_BAR.add("Compressed file completion ....");
+//                        log.info("out_data,startIndex:{},count:{}", startIndex, count);
+//                        out.write("export/" + zipFileName);
+//                                return;
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        out.write("error: export data error." + e);
+//                        return;
+//                    }
                 case "delete":
                     String name = request.getParameter("n");
                     File file = new File(ApplicationCache.DEFAULT_CSV_FILE_PATH + name);

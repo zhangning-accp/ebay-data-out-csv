@@ -8,5 +8,6 @@ import java.util.ArrayList;
 public class ApplicationCache {
     public static String DEFAULT_DATA_SOURCE_XML_FILE_PAH = "";
     public static String DEFAULT_CSV_FILE_PATH = "";
+    public static String REAL_PATH = "";
     public static final ArrayList PROGRESS_BAR = new ArrayList();
 }

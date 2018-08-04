@@ -18,7 +18,7 @@ public class Test {
     private static void saveDataToCsv() {
         //MultiDataSource.dataSourceXML = "D:\\project\\idea\\ebay-data-out-csv\\src\\main\\resources\\data-source.xml";
         MultiDataSource multiDataSource = MultiDataSource.getInstance();
-        CsvOut.saveDataToCsv(1,-10000,"C:\\Users\\zn\\Desktop\\out-data.csv","local.crawler_database");
+        //CsvOut.saveDataToCsv(1,-10000,"C:\\Users\\zn\\Desktop\\out-data.csv","local.crawler_database");
 
     }
     private static String replaceComma(String str) {

@@ -85,8 +85,8 @@
               obj.disabled = false;
               return false;
           }
-          if(dbName.length > 4) {
-              alert("只能选择4个库，您选择了" + dbName.length);
+          if(dbName.length > 2) {
+              alert("只能选择2个库，您选择了" + dbName.length);
               obj.disabled = false;
               return false;
           }
@@ -95,7 +95,6 @@
           for(i = 0; i < dbName.length; i ++) {
               parameter += "&dbName=" + dbName[i].value;
           }
-
           $.get("home.jsp",parameter,function(data){
               alert("服务器已接受到导出任务.预计完成时间11 h");
 //              var file = data;
@@ -162,13 +161,13 @@
                   <thead>
                   <tr>
                       <th>
-                          文件地址
+                          数据库
+                      </th>
+                      <th>
+                          文件名(KB)
                       </th>
                       <th>
                           导出时间
-                      </th>
-                      <th>
-                          导出数量
                       </th>
                       <th>
                           操作
@@ -176,27 +175,38 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <%--<%--%>
-                      <%--List<File> files = Utils.allFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);--%>
-                      <%--for(File file : files) {--%>
-                          <%--String fileName = file.getName();--%>
-                          <%--String downloadUrl = "export/" + file.getName();--%>
-                          <%--String date = new Date(file.lastModified()).toLocaleString();--%>
-                          <%--String count = fileName.substring(fileName.lastIndexOf("-") + 1,fileName.indexOf("."));--%>
-                          <%--double length = file.length() / 1024;--%>
-                  <%--%>--%>
-                        <%--<tr>--%>
-                            <%--<td>--%>
-                                <%--<a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>--%>
-                            <%--</td>--%>
-                            <%--<td><%=date%></td>--%>
-                            <%--<td><%=count%></td>--%>
-                            <%--<td>--%>
-                                <%--<a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>--%>
-                            <%--</td>--%>
-                        <%--</tr>--%>
+                  <%
+                      Map<String,List<File>> fileMap = Utils.getZipFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);
+                      System.out.println("map:" + fileMap);
+                      Iterator<String> iteratorkeys = fileMap.keySet().iterator();
+                      while(iteratorkeys.hasNext()) {
+                          String key = iteratorkeys.next();
+                          List<File> files = fileMap.get(key);
+                          for(int i = 0; i < files.size(); i ++) {
+                              File file = files.get(i);
+                              String fileName = file.getName();
+                              String downloadUrl = file.getAbsolutePath().replace(ApplicationCache.REAL_PATH,"");
+                              String date = new Date(file.lastModified()).toLocaleString();
+                              double length = file.length() / 1024;
+                              if(i > 0) {
+                                  key = "";
+                              }
+                  %>
+                  <tr>
+                      <td>
+                          <%=key%>
+                      </td>
+                      <td>
+                          <a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>
+                      </td>
+                      <td><%=date%></td>
+                      <td>
+                          <a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>
+                      </td>
+                  </tr>
 
-                      <%--<%}%>--%>
+                  <%}}%>
+
                   </tbody>
               </table>
           </div>

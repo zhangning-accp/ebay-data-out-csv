@@ -1,13 +1,15 @@
 package dao;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.sql2o.Sql2o;
 import util.ApplicationCache;
 
 import java.util.*;
@@ -17,7 +19,10 @@ import java.util.*;
  */
 @Slf4j
 public class MultiDataSource {
+    // key :
     private Map<String, List<DataSource>> dataSources = new HashMap();
+    // key: server_name.db_name.
+    private Map<String,DruidDataSource> druidDataSourceMap = new HashMap();
     private static MultiDataSource instance = null;
     //public static String dataSourceXML = ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH;
     private long oldLastModify = 0;
@@ -29,6 +34,7 @@ public class MultiDataSource {
                 if (checkChange()) {
                     log.warn("data sourde is change, reloading ..... ");
                     readerXMLBuilderDataSources();
+                    initDruidDataSourceMap();
                     log.warn("data sourde reloading finished ..... ");
                 }
                 try {
@@ -55,47 +61,12 @@ public class MultiDataSource {
         return dataSources;
     }
 
-    /**
-     * @param dataBaseName 需要查找的数据库名全称。由base-source-id.db-name构成。举例，如
-     *                     <base-source id="ds1"/>
-     *                     <data-source db-name="db1" base-source="ds1"/>
-     *                     要找db1，则ds1.db1
-     * @return
-     */
-    public Sql2o getConnection(String dataBaseName) {
-        if (dataBaseName.contains(".")) {
-            String[] split = dataBaseName.split("\\.");
-            String sourceId = split[0];
-            String dbName = split[1];
-            if (dataSources.containsKey(sourceId)) {
-                List<DataSource> dataSourceList = dataSources.get(sourceId);
-                if (dataSourceList != null && dataSourceList.size() > 0) {
-                    for (int i = 0; i < dataSourceList.size(); i++) {
-                        DataSource dataSource = dataSourceList.get(i);
-                        if (dataSource.getDbName().equals(dbName)) {
-                            try {
-                                Class.forName(dataSource.getDriverClass());
-                            } catch (ClassNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            Sql2o sql2o = new Sql2o(dataSource.getUrl(),
-                                    dataSource.getUserName(), dataSource.getPassword());
-                            return sql2o;
-                        }
-                    }
-                } else {
-                    log.error("id:{} base souce not any db. db list size:{}",sourceId,dataSourceList.size());
-                    return null;
-                }
-            } else {
-                log.error("not find db source id is:{},please check data-source.xml <base-source> node id attribute value.",sourceId);
-                return null;
-            }
-        } else {
-            log.error("data base name format error. exsample: id.db name");
-            return null;
+    public Connection getConnection(String fullDBName) {
+        try {
+            return druidDataSourceMap.get(fullDBName).getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        log.error("not find any db");
         return null;
     }
 
@@ -149,5 +120,35 @@ public class MultiDataSource {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+    }
+    private void initDruidDataSourceMap() {
+        Iterator<String> iterator = dataSources.keySet().iterator();
+        while(iterator.hasNext()) {
+            String key = iterator.next();
+            List<DataSource> dataSourceList = dataSources.get(key);
+            for(DataSource dataSource : dataSourceList) {
+                String url = dataSource.getUrl();
+                String userName = dataSource.getUserName();
+                String password = dataSource.getPassword();
+                String driverClass = dataSource.getDriverClass();
+                String dataBaseName = dataSource.getDbName();
+
+                String fullDBName = key + "." + dataBaseName;
+                // 创建连接池对象
+                DruidDataSource druidDataSource = new DruidDataSource();
+                druidDataSource.setDriverClassName(driverClass);
+                druidDataSource.setUsername(userName);
+                druidDataSource.setPassword(password);
+                druidDataSource.setUrl(url);
+                druidDataSource.setInitialSize(2);
+                druidDataSource.setMinIdle(1);
+                druidDataSource.setMaxActive(5);
+                druidDataSource.setValidationQuery("select count(1) from crawler_machine");
+                druidDataSource.setTestWhileIdle(true);
+                // 启用监控统计功能  dataSource.setFilters("stat");// for mysql  dataSource.setPoolPreparedStatements(false);
+                druidDataSourceMap.put(fullDBName,druidDataSource);
+            }
+        }
+        log.info("initDruidDataSourceMap finished.... ");
     }
 }
