@@ -63,7 +63,7 @@ public class BatchExportDataThread implements Runnable {
             if(to > maxSortIndex) {
                 break;
             }
-            start += count;
+            start = to;
             to = start + count;
             id ++;
             list.clear();

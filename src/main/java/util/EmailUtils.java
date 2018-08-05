@@ -11,14 +11,15 @@ import jodd.mail.SmtpServer;
 public class EmailUtils {
     public static void sendEmail(String content){
         Email email = Email.create()
-                .from("909604945@qq.com")
-                .to("909604945@qq.com")
-                .subject("Hello! HuaWang guys!")
-                .textMessage("A plain text message...");
+                .from("zhangning_holley@126.com")
+                .to("ebay@imnavy.com")//wanghua96_1@aliyun.com
+                .subject("Hello! JunHaiHe.")
+                .textMessage("发件人张宁.... 这是一封测试邮件.....!");
 
         SmtpServer smtpServer = MailServer.create()
-                .host("http://mail.com")
-                .port(21)
+                .host("smtp.126.com")
+                .port(25)
+                .auth("zhangning_holley@126.com","520liuqiumei")
                 .buildSmtpMailServer();
         SendMailSession session = smtpServer.createSession();
         session.open();

@@ -201,7 +201,7 @@
                       </td>
                       <td><%=date%></td>
                       <td>
-                          <a href="home.jsp?action=delete&n=<%=fileName%>">删除</a>
+                          <a href="home.jsp?action=delete&n=<%=fileName%>&dn=<%=key%>">删除</a>
                       </td>
                   </tr>
 
