@@ -12,7 +12,7 @@ public class EmailUtils {
     public static void sendEmail(String content){
         Email email = Email.create()
                 .from("zhangning_holley@126.com")
-                .to("ebay@imnavy.com")//wanghua96_1@aliyun.com
+                .to("")//wanghua96_1@aliyun.com   ebay@imnavy.com
                 .subject("Hello! JunHaiHe.")
                 .textMessage("发件人张宁.... 这是一封测试邮件.....!");
 

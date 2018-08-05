@@ -52,7 +52,10 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
 //                    }
                 case "delete":
                     String name = request.getParameter("n");
-                    File file = new File(ApplicationCache.DEFAULT_CSV_FILE_PATH + name);
+                    String fullDbName = request.getParameter("dn");
+                    String dbFolder = Utils.getRelativeFilePathByFullDBName(fullDbName);
+                    String deltePath = ApplicationCache.DEFAULT_CSV_FILE_PATH + dbFolder + name;
+                    File file = new File(deltePath);
                     file.delete();
                     break;
                 case "batch":

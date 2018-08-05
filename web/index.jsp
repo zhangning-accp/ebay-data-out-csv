@@ -181,6 +181,7 @@
                       Iterator<String> iteratorkeys = fileMap.keySet().iterator();
                       while(iteratorkeys.hasNext()) {
                           String key = iteratorkeys.next();
+                          //String server = key;
                           List<File> files = fileMap.get(key);
                           for(int i = 0; i < files.size(); i ++) {
                               File file = files.get(i);
@@ -188,24 +189,19 @@
                               String downloadUrl = file.getAbsolutePath().replace(ApplicationCache.REAL_PATH,"");
                               String date = new Date(file.lastModified()).toLocaleString();
                               double length = file.length() / 1024;
-                              if(i > 0) {
-                                  key = "";
+                              out.write("<tr>");
+                              if(i == 0) {
+                                  out.write("<td>" + key + "</td>");
+                              } else {
+                                  out.write("<td></td>");
                               }
+                              out.write("<td><a href=" + downloadUrl + ">" + fileName + "(" + length + "KB)</a></td>");
+                              out.write("<td>" + date + "</td>");
+                              out.write("<td><a href=home.jsp?action=delete&n=" + fileName + "&dn=" + key + ">删除</a></td>");
+                              out.write("</tr>");
+                        }
+                      }
                   %>
-                  <tr>
-                      <td>
-                          <%=key%>
-                      </td>
-                      <td>
-                          <a href="<%=downloadUrl%>"><%=fileName + "(" + length + "KB)"%></a>
-                      </td>
-                      <td><%=date%></td>
-                      <td>
-                          <a href="home.jsp?action=delete&n=<%=fileName%>&dn=<%=key%>">删除</a>
-                      </td>
-                  </tr>
-
-                  <%}}%>
 
                   </tbody>
               </table>
