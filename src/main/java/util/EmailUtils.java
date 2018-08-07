@@ -24,7 +24,8 @@ public class EmailUtils {
 
         SmtpServer smtpServer = MailServer.create()
                 .host("smtp.126.com")
-                .port(25)
+                .ssl(true)
+                .port(465)
                 .auth("zhangning_holley@126.com","520liuqiumei")
                 .buildSmtpMailServer();
         SendMailSession session = smtpServer.createSession();
