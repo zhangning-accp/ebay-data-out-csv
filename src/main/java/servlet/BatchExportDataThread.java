@@ -9,9 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jodd.mail.EmailUtil;
 import lombok.extern.slf4j.Slf4j;
 import util.ApplicationCache;
 import util.CsvOut;
+import util.EmailUtils;
 import util.Utils;
 
 /**
@@ -31,6 +33,7 @@ public class BatchExportDataThread implements Runnable {
     }
     @Override
     public void run() {
+        log.info("开始执行导出 {} 操作..",dbName);
         int id = 0;
         //每50个打包一个zip
         String zipFolder = ApplicationCache.DEFAULT_CSV_FILE_PATH + Utils.getRelativeFilePathByFullDBName(dbName);
@@ -39,10 +42,11 @@ public class BatchExportDataThread implements Runnable {
             file.mkdirs();
         }
         //1.获取数据库数据数据
-
         ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dbName);
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         int [] minMax = dao.findMinAndMaxSortIndex();
+        int dataTotal = dao.findCountIsProductNameNotNull(); // 数据库里的数据总量
+        int realDtatTotal = 0;//实际导出的数据总量
         //先获取min 和 max.
         int minSortIndex = minMax[0];
         int maxSortIndex = minMax[1];
@@ -51,14 +55,13 @@ public class BatchExportDataThread implements Runnable {
         int to = start + count;
         List<ECommerceProductDetail> list = null;
         while(true) {// 当start + count > maxSortIndex 循环结束
-            log.info("从数据库 {} 获取数据，start:{}, to:{}",dbName,start,to);
             list = dao.findProductNameIsNotNullProductsBySortIndex(start,to);
-            log.info("从数据库获取数据完毕，数量:{},开始导出为csv文件",list.size());
             if(list != null && list.size() > 0) {
                 Date date = new Date();
                 String fileName = zipFolder + format.format(date) + "-" + id + ".csv";
                 CsvOut.saveDataToCsv(list, fileName);
-                log.info("导出csv文件成功，文件信息：{}",fileName);
+                //log.info("导出{}库csv文件成功，当次导出的数据量:{},文件信息：{}",dbName,list.size(),fileName);
+                realDtatTotal += list.size();
             }
             if(to > maxSortIndex) {
                 break;
@@ -76,7 +79,7 @@ public class BatchExportDataThread implements Runnable {
             return d2.compareTo(d1);
         }).collect(Collectors.toList());
         if(csvFiles != null && csvFiles.size() > 0) {
-            log.info("开始将csv压缩成zip...");
+            //log.info("开始将csv压缩成zip...");
             Utils.csvToZip(zipFolder, csvFiles, 50);
             //---- 压缩结束 ----
              //删除csv文件
@@ -84,6 +87,10 @@ public class BatchExportDataThread implements Runnable {
                 f.delete();
             }
         }
-        log.info("export {} data finished... datatime:{}",dbName,format.format(new Date()));
+        EmailUtils.sendEmail("909604945@qq.com","数据库" + dbName + "导出完毕....","数据库" + dbName + "导出完毕....");
+        EmailUtils.sendEmail("ebay@imnavy.com","数据库" + dbName + "导出完毕....","数据库" + dbName + "导出完毕....");
+        log.info("已发送邮件.....");
+        log.info("export {} data finished... dataTotal:{}, realDtatTotal:{},datatime:{}, folder path : {}",
+                dbName,dataTotal,realDtatTotal,format.format(new Date()),zipFolder);
     }
 }

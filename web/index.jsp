@@ -96,7 +96,7 @@
               parameter += "&dbName=" + dbName[i].value;
           }
           $.get("home.jsp",parameter,function(data){
-              alert("服务器已接受到导出任务.预计完成时间11 h");
+              alert("服务器已接受导出任务...");
 //              var file = data;
 //              var fileName = data.substring(file.indexOf("/") + 1);
 //              var nodeA = $("#file")
@@ -177,7 +177,6 @@
                   <tbody>
                   <%
                       Map<String,List<File>> fileMap = Utils.getZipFiles(ApplicationCache.DEFAULT_CSV_FILE_PATH);
-                      System.out.println("map:" + fileMap);
                       Iterator<String> iteratorkeys = fileMap.keySet().iterator();
                       while(iteratorkeys.hasNext()) {
                           String key = iteratorkeys.next();

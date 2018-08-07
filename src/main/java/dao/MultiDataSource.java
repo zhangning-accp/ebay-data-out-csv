@@ -1,6 +1,6 @@
 package dao;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,7 +22,8 @@ public class MultiDataSource {
     // key :
     private Map<String, List<DataSource>> dataSources = new HashMap();
     // key: server_name.db_name.
-    private Map<String,DruidDataSource> druidDataSourceMap = new HashMap();
+//    private Map<String,DruidDataSource> druidDataSourceMap = new HashMap();
+    private Map<String,HikariDataSource> poolDataSourceMap = new HashMap();
     private static MultiDataSource instance = null;
     //public static String dataSourceXML = ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH;
     private long oldLastModify = 0;
@@ -63,7 +64,7 @@ public class MultiDataSource {
 
     public Connection getConnection(String fullDBName) {
         try {
-            return druidDataSourceMap.get(fullDBName).getConnection();
+            return poolDataSourceMap.get(fullDBName).getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,23 +133,23 @@ public class MultiDataSource {
                 String password = dataSource.getPassword();
                 String driverClass = dataSource.getDriverClass();
                 String dataBaseName = dataSource.getDbName();
-
                 String fullDBName = key + "." + dataBaseName;
-                // 创建连接池对象
-                DruidDataSource druidDataSource = new DruidDataSource();
-                druidDataSource.setDriverClassName(driverClass);
-                druidDataSource.setUsername(userName);
-                druidDataSource.setPassword(password);
-                druidDataSource.setUrl(url);
-                druidDataSource.setInitialSize(2);
-                druidDataSource.setMinIdle(1);
-                druidDataSource.setMaxActive(5);
-                druidDataSource.setValidationQuery("select count(1) from crawler_machine");
-                druidDataSource.setTestWhileIdle(true);
-                // 启用监控统计功能  dataSource.setFilters("stat");// for mysql  dataSource.setPoolPreparedStatements(false);
-                druidDataSourceMap.put(fullDBName,druidDataSource);
+                // 避免修改文件后，重新创建无意义的sourde对象
+                if(!poolDataSourceMap.containsKey(fullDBName)) {
+                    // 创建连接池对象
+                    HikariDataSource hikariDataSource = new HikariDataSource();
+                    hikariDataSource.setJdbcUrl(url);
+                    hikariDataSource.setUsername(userName);
+                    hikariDataSource.setPassword(password);
+                    hikariDataSource.setConnectionTestQuery("select count(1) from crawler_machine");
+                    hikariDataSource.setDriverClassName(driverClass);
+                    hikariDataSource.setMaximumPoolSize(10);
+                    hikariDataSource.setMinimumIdle(1);
+                    // 启用监控统计功能  dataSource.setFilters("stat");// for mysql  dataSource.setPoolPreparedStatements(false);
+                    poolDataSourceMap.put(fullDBName, hikariDataSource);
+                }
             }
         }
-        log.info("initDruidDataSourceMap finished.... ");
+        log.info("Init data source map finished.... ");
     }
 }
