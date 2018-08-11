@@ -145,8 +145,14 @@
                       <div style="border:1px;">
                          <%
                             List<DataSource> dataSources = dataSourceString.get(key);
-                             for(DataSource source : dataSources) {%>
-                      <input type="checkbox" name="dbName" value="<%=source.getFullDbName()%>"/> <%=source.getDbName() + "[" + source.getCount() + "]" %>
+                             for(DataSource source : dataSources) {
+                                 String viewDbName = source.getDbName() + "[" + source.getCount() + "]";
+                                 if(source.isExport()) {
+                                     viewDbName += "(已导出)";
+                                 }
+
+                         %>
+                      <input type="checkbox" name="dbName" value="<%=source.getFullDbName()%>"/> <%=viewDbName%>
                              <%}%>
                       </div>
                              <%}%>

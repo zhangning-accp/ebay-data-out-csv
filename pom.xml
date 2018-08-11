@@ -3,11 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>groupId</groupId>
     <artifactId>ebay-data-out-csv</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <dependencies>
         <!--&lt;!&ndash; https://mvnrepository.com/artifact/com.google.guava/guava &ndash;&gt;-->
         <dependency>
@@ -15,13 +13,6 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.sql2o/sql2o &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.sql2o</groupId>-->
-            <!--<artifactId>sql2o</artifactId>-->
-            <!--<version>1.6.0-RC3</version>-->
-        <!--</dependency>-->
-        <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>
             <groupId>org.dom4j</groupId>
@@ -47,7 +38,6 @@
             <version>1.8.0-beta2</version>
             <scope>compile</scope>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -55,41 +45,23 @@
             <version>3.0-alpha-1</version>
             <scope>provided</scope>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.directory.studio/org.apache.commons.lang -->
         <dependency>
             <groupId>org.apache.directory.studio</groupId>
             <artifactId>org.apache.commons.lang</artifactId>
             <version>2.6</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
-        <!--<dependency>-->
-            <!--<groupId>com.alibaba</groupId>-->
-            <!--<artifactId>druid</artifactId>-->
-            <!--<version>1.1.10</version>-->
-        <!--</dependency>-->
         <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.2.0</version>
         </dependency>
-
-
         <!-- https://mvnrepository.com/artifact/org.jodd/jodd-mail -->
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-mail</artifactId>
             <version>5.0.3</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.commons</groupId>-->
-            <!--<artifactId>commons-compress</artifactId>-->
-            <!--<version>1.17</version>-->
-        <!--</dependency>-->
-
-
     </dependencies>
 </project>

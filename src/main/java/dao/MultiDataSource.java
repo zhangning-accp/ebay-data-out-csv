@@ -5,6 +5,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -19,13 +20,10 @@ import java.util.*;
  */
 @Slf4j
 public class MultiDataSource {
-    // key :
-    private Map<String, List<DataSource>> dataSources = new HashMap();
-    // key: server_name.db_name.
-//    private Map<String,DruidDataSource> druidDataSourceMap = new HashMap();
+    // key : db-server.db-name
+    private Map<String, List<DataSource>> dataSources = new LinkedHashMap();
     private Map<String,HikariDataSource> poolDataSourceMap = new HashMap();
     private static MultiDataSource instance = null;
-    //public static String dataSourceXML = ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH;
     private long oldLastModify = 0;
     private long newLastModify = 0;
 
@@ -82,6 +80,8 @@ public class MultiDataSource {
     }
 
     private void readerXMLBuilderDataSources() {
+        File file = new File(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
+        System.out.println(file.getAbsolutePath());
         SAXReader reader = new SAXReader();
         try {
             Document document = reader.read(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
@@ -90,7 +90,7 @@ public class MultiDataSource {
             for (int i = 0; i < baseSourceElements.size(); i++) {
                 Element baseSource = baseSourceElements.get(i);
                 String id = baseSource.attributeValue("id");
-                String url = baseSource.attributeValue("url");
+                String url = baseSource.attributeValue("url") + "?useUnicode=true&autoReconnect=true&useSSL=false";
                 String userName = baseSource.attributeValue("user-name");
                 String password = baseSource.attributeValue("password");
                 String driverClass = baseSource.attributeValue("driver-class");
@@ -101,6 +101,13 @@ public class MultiDataSource {
                     Element dataSourceElement = dataSourceElements.get(j);
                     String dbName = dataSourceElement.attributeValue("db-name");
                     String count = dataSourceElement.attributeValue("count");
+                    String isView = dataSourceElement.attributeValue("isView");
+                    isView = StringUtils.defaultString(isView,"false");
+                    isView = StringUtils.trimToEmpty(isView);
+                    String isExport = dataSourceElement.attributeValue("isExport");
+                    isExport = StringUtils.defaultString(isExport,"false");
+                    isExport = StringUtils.trimToEmpty(isExport);
+
                     if(StringUtils.isNotBlank(count)) {
                         try {
                             dataSource.setCount(Integer.parseInt(count));
@@ -114,6 +121,8 @@ public class MultiDataSource {
                     dataSource.setDriverClass(driverClass);
                     dataSource.setDbName(dbName);
                     dataSource.setPassword(password);
+                    dataSource.setView(BooleanUtils.toBooleanObject(isView));
+                    dataSource.setExport(BooleanUtils.toBooleanObject(isExport));
                     dataSourceList.add(dataSource);
                 }
                 dataSources.put(id, dataSourceList);
