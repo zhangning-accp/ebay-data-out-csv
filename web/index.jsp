@@ -149,17 +149,23 @@
                                  String viewDbName = source.getDbName() + "[" + source.getCount() + "]";
                                  if(source.isExport()) {
                                      viewDbName += "(已导出)";
+                                     out.write("<input type='checkbox' name='dbName' value='" + source.getFullDbName() + "'/>" +
+                                                     "<span style='color:darkorange;'>" + viewDbName + "</span>");
+                                 } else if(source.isCurrent()) {
+                                     viewDbName += "(正在导出)";
+                                     out.write("<input type='checkbox' name='dbName' checked='checked' disabled='true' value='" + source.getFullDbName() + "'/>" +
+                                             "<span style='color:limegreen;'>" + viewDbName + "</span>");
+                                 }else {
+                                     out.write("<input type='checkbox' name='dbName' value='" + source.getFullDbName() + "'/>" + viewDbName);
                                  }
 
-                         %>
-                      <input type="checkbox" name="dbName" value="<%=source.getFullDbName()%>"/> <%=viewDbName%>
-                             <%}%>
+                         }%>
                       </div>
                              <%}%>
                       <button class="button button-primary button-rounded button-small" onclick="outData(this)">导出数据</button>
                   </fieldset>
               <%--</form>--%>
-                  <div class="alert alert-success" role="alert">
+                  <div class="alert alert-success" role="alert" style="color:darkorange;">
                       系统默认2w个数据一个csv文件，并会每50个csv文件压缩成一个zip文件供下载使用
                   </div>
               <span class="help-block">导出记录</span>

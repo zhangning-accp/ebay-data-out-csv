@@ -2,8 +2,13 @@ package dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +16,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import util.ApplicationCache;
 
 import java.util.*;
@@ -20,7 +26,7 @@ import java.util.*;
  */
 @Slf4j
 public class MultiDataSource {
-    // key : db-server.db-name
+    // key : db-server
     private Map<String, List<DataSource>> dataSources = new LinkedHashMap();
     private Map<String,HikariDataSource> poolDataSourceMap = new HashMap();
     private static MultiDataSource instance = null;
@@ -33,7 +39,7 @@ public class MultiDataSource {
                 if (checkChange()) {
                     log.warn("data sourde is change, reloading ..... ");
                     readerXMLBuilderDataSources();
-                    initDruidDataSourceMap();
+                    initPoolDataSourceMap();
                     log.warn("data sourde reloading finished ..... ");
                 }
                 try {
@@ -60,6 +66,12 @@ public class MultiDataSource {
         return dataSources;
     }
 
+    public DataSource getSimpleDataSource(String fullDBName) {
+        String server = fullDBName.substring(0,fullDBName.indexOf("."));
+        String dbName = fullDBName.substring(fullDBName.indexOf(".") + 1);
+        List<DataSource> list = dataSources.get(server);
+        return list.stream().filter(p->p.getDbName().equals(dbName)).findFirst().get();
+    }
     public Connection getConnection(String fullDBName) {
         try {
             return poolDataSourceMap.get(fullDBName).getConnection();
@@ -69,7 +81,7 @@ public class MultiDataSource {
         return null;
     }
 
-    private boolean checkChange() {
+    private synchronized boolean checkChange() {
         File file = new File(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
         newLastModify = file.lastModified();
         if(newLastModify > oldLastModify) {
@@ -79,7 +91,7 @@ public class MultiDataSource {
         return false;
     }
 
-    private void readerXMLBuilderDataSources() {
+    private synchronized void readerXMLBuilderDataSources() {
         File file = new File(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
         log.info("file path:{}",file.getAbsolutePath());
         SAXReader reader = new SAXReader();
@@ -136,7 +148,7 @@ public class MultiDataSource {
             e.printStackTrace();
         }
     }
-    private void initDruidDataSourceMap() {
+    private synchronized void initPoolDataSourceMap() {
         Iterator<String> iterator = dataSources.keySet().iterator();
         while(iterator.hasNext()) {
             String key = iterator.next();
@@ -166,7 +178,49 @@ public class MultiDataSource {
         }
         log.info("Init data source map finished.... ");
     }
-    public void saveExport(String fullDbName) {
+    public synchronized void saveExport(String fullDBName) {
+        String server = fullDBName.substring(0,fullDBName.indexOf("."));
+        String dbName = fullDBName.substring(fullDBName.indexOf(".") + 1);
 
+        File file = new File(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
+        log.info("file path:{}",file.getAbsolutePath());
+        SAXReader reader = new SAXReader();
+        try {
+            Document document = reader.read(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
+            Element root = document.getRootElement();
+            List<Element> baseSourceElements = root.elements("base-source");
+            for (int i = 0; i < baseSourceElements.size(); i++) {
+                Element baseSource = baseSourceElements.get(i);
+                String id = baseSource.attributeValue("id");
+                if (id.equals(server.trim())) {// 如果当前的
+                    List<Element> dataSourceElements = baseSource.elements("data-source");
+                    for (int j = 0; j < dataSourceElements.size(); j++) {
+                        Element dataSourceElement = dataSourceElements.get(j);
+                        String name = dataSourceElement.attributeValue("db-name");
+                        if(name.equals(dbName)) {
+                            dataSourceElement.addAttribute("isExport","true");
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            //指定文件输出的位置
+            FileOutputStream out = new FileOutputStream(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
+            //1.创建写出对象
+            XMLWriter writer = new XMLWriter(out);
+            //2.写出Document对象
+            writer.write(document);
+            //3.关闭流
+            writer.close();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

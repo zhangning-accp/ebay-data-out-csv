@@ -7,7 +7,7 @@
         <data-source db-name="db12" count="23770954" isExport="true"/>
         <data-source db-name="db13" count="9907258" isExport="true"/>
         <data-source db-name="db7" count="20829673"/>
-        <data-source db-name="db6_1" count="26953661" isView="true" isCurrent="true"/>
+        <data-source db-name="db6_1" count="26953661" isView="true"/>
         <data-source db-name="db14_b_1" count="19433831" isView="true"/>
     </base-source>
     <base-source id="docker-2" url="jdbc:mysql://172.17.238.11:49527/{db-name}"
@@ -25,7 +25,7 @@
         <data-source db-name="db3_1" count="25294776" isExport="true"/>
         <data-source db-name="db3_2" count="25309563" isExport="true"/>
         <data-source db-name="db9" count="17164870"/>
-        <data-source db-name="db12_b_1" count="20920029" isView="true"/>
+        <data-source db-name="db12_b_1" count="20920029" isView="true" />
         <data-source db-name="db12_c" count="22483500" isView="true"/>
     </base-source>
     <base-source id="docker-4" url="jdbc:mysql://172.17.238.11:19527/{db-name}"

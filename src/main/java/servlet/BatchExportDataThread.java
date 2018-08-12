@@ -2,6 +2,7 @@ package servlet;
 
 import dao.ECommerceProductDetail;
 import dao.ECommerceProductDetailDao;
+import dao.MultiDataSource;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +34,13 @@ public class BatchExportDataThread implements Runnable {
     }
     @Override
     public void run() {
+        MultiDataSource dataSource = MultiDataSource.getInstance();
+        exportData();
+        dataSource.getSimpleDataSource(dbName).setCurrent(true);
+        dataSource.saveExport(dbName);
+    }
+
+    private void exportData() {
         log.info("开始执行导出 {} 操作..",dbName);
         int id = 0;
         //每50个打包一个zip
@@ -82,7 +90,7 @@ public class BatchExportDataThread implements Runnable {
             //log.info("开始将csv压缩成zip...");
             Utils.csvToZip(zipFolder, csvFiles, 50);
             //---- 压缩结束 ----
-             //删除csv文件
+            //删除csv文件
             for (File f : csvFiles) {
                 f.delete();
             }
@@ -90,7 +98,6 @@ public class BatchExportDataThread implements Runnable {
         EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished ","dataTotal:" + dataTotal +
                 ",realDtatTotal:" + realDtatTotal + ",difference value:" + (realDtatTotal - dataTotal));
         EmailUtils.sendEmail("ebay@imnavy.com","Database " + dbName + " export finished ","");
-        log.info("已发送邮件.....");
         log.info("export {} data finished... dataTotal:{}, realDtatTotal:{},datatime:{}, folder path : {}",
                 dbName,dataTotal,realDtatTotal,format.format(new Date()),zipFolder);
     }
