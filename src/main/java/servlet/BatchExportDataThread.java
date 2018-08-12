@@ -35,12 +35,16 @@ public class BatchExportDataThread implements Runnable {
     @Override
     public void run() {
         MultiDataSource dataSource = MultiDataSource.getInstance();
-        exportData();
         dataSource.getSimpleDataSource(dbName).setCurrent(true);
+        exportData();
         dataSource.saveExport(dbName);
     }
 
     private void exportData() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+//        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+        Date date = new Date();
+        String startDate = format.format(date);
         log.info("开始执行导出 {} 操作..",dbName);
         int id = 0;
         //每50个打包一个zip
@@ -49,9 +53,14 @@ public class BatchExportDataThread implements Runnable {
         if(!file.exists()) {
             file.mkdirs();
         }
+        //导出前先删除以前的文件
+        File [] childer = file.listFiles();
+        for(File f:childer) {
+            f.delete();
+        }
         //1.获取数据库数据数据
         ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dbName);
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+
         int [] minMax = dao.findMinAndMaxSortIndex();
         int dataTotal = dao.findCountIsProductNameNotNull(); // 数据库里的数据总量
         int realDtatTotal = 0;//实际导出的数据总量
@@ -65,10 +74,9 @@ public class BatchExportDataThread implements Runnable {
         while(true) {// 当start + count > maxSortIndex 循环结束
             list = dao.findProductNameIsNotNullProductsBySortIndex(start,to);
             if(list != null && list.size() > 0) {
-                Date date = new Date();
+                date = new Date();
                 String fileName = zipFolder + format.format(date) + "-" + id + ".csv";
                 CsvOut.saveDataToCsv(list, fileName);
-                //log.info("导出{}库csv文件成功，当次导出的数据量:{},文件信息：{}",dbName,list.size(),fileName);
                 realDtatTotal += list.size();
             }
             if(to > maxSortIndex) {
@@ -95,9 +103,13 @@ public class BatchExportDataThread implements Runnable {
                 f.delete();
             }
         }
+        date = new Date();
+        String finishedDate = format.format(date);
         EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished ","dataTotal:" + dataTotal +
-                ",realDtatTotal:" + realDtatTotal + ",difference value:" + (realDtatTotal - dataTotal));
+                ",realDtatTotal:" + realDtatTotal + ",difference value:" + (realDtatTotal - dataTotal)
+        + "start date:" + startDate + ", finished date:" + finishedDate);
         EmailUtils.sendEmail("ebay@imnavy.com","Database " + dbName + " export finished ","");
+
         log.info("export {} data finished... dataTotal:{}, realDtatTotal:{},datatime:{}, folder path : {}",
                 dbName,dataTotal,realDtatTotal,format.format(new Date()),zipFolder);
     }
