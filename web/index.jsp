@@ -133,7 +133,7 @@
           <div class="span6">
               <%--<form>--%>
                   <fieldset>
-                      <legend>输入项</legend>
+                      <legend>选择对应的数据库导出数据，一次最多只能导2个库</legend>
                       <%
                           Map<String, List<DataSource>> dataSourceString = (Map)application.getAttribute("dataSource");
                           Iterator<String> iterator = dataSourceString.keySet().iterator();

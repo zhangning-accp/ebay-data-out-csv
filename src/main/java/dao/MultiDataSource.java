@@ -81,7 +81,7 @@ public class MultiDataSource {
 
     private void readerXMLBuilderDataSources() {
         File file = new File(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
-        System.out.println(file.getAbsolutePath());
+        log.info("file path:{}",file.getAbsolutePath());
         SAXReader reader = new SAXReader();
         try {
             Document document = reader.read(ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH);
@@ -107,6 +107,9 @@ public class MultiDataSource {
                     String isExport = dataSourceElement.attributeValue("isExport");
                     isExport = StringUtils.defaultString(isExport,"false");
                     isExport = StringUtils.trimToEmpty(isExport);
+                    String isCurrent = dataSourceElement.attributeValue("isCurrent");
+                    isCurrent = StringUtils.defaultString(isCurrent,"false");
+                    isCurrent = StringUtils.trimToEmpty(isCurrent);
 
                     if(StringUtils.isNotBlank(count)) {
                         try {
@@ -121,8 +124,10 @@ public class MultiDataSource {
                     dataSource.setDriverClass(driverClass);
                     dataSource.setDbName(dbName);
                     dataSource.setPassword(password);
-                    dataSource.setView(BooleanUtils.toBooleanObject(isView));
-                    dataSource.setExport(BooleanUtils.toBooleanObject(isExport));
+                    dataSource.setView(BooleanUtils.toBoolean(isView));
+                    dataSource.setExport(BooleanUtils.toBoolean(isExport));
+                    dataSource.setCurrent(BooleanUtils.toBoolean(isCurrent));
+
                     dataSourceList.add(dataSource);
                 }
                 dataSources.put(id, dataSourceList);
@@ -160,5 +165,8 @@ public class MultiDataSource {
             }
         }
         log.info("Init data source map finished.... ");
+    }
+    public void saveExport(String fullDbName) {
+
     }
 }
