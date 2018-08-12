@@ -87,8 +87,9 @@ public class BatchExportDataThread implements Runnable {
                 f.delete();
             }
         }
-        EmailUtils.sendEmail("909604945@qq.com","数据库" + dbName + "导出完毕....","数据库" + dbName + "导出完毕....");
-        EmailUtils.sendEmail("ebay@imnavy.com","数据库" + dbName + "导出完毕....","数据库" + dbName + "导出完毕....");
+        EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished ","dataTotal:" + dataTotal +
+                ",realDtatTotal:" + realDtatTotal + ",difference value:" + (realDtatTotal - dataTotal));
+        EmailUtils.sendEmail("ebay@imnavy.com","Database " + dbName + " export finished ","");
         log.info("已发送邮件.....");
         log.info("export {} data finished... dataTotal:{}, realDtatTotal:{},datatime:{}, folder path : {}",
                 dbName,dataTotal,realDtatTotal,format.format(new Date()),zipFolder);
