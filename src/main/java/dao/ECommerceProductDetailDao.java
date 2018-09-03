@@ -70,15 +70,53 @@ public class ECommerceProductDetailDao {
      * 查询前10w有单品销量和店铺销量的数据。
      * @return
      */
-    public List<ECommerceProductDetail> findProductDetailBySoldOrFeedbackCount(int limit) {
+    public List<ECommerceProductDetail> findProductDetailBySold(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
-        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold IS NOT NULL OR feedback_count IS NOT NULL and product_name is not null order by sold,feedback_count desc limit " + limit;
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold IS NOT NULL and product_name is not null order by sold desc limit " + limit;
         log.info("sql:{}",sql);
-
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+            ECommerceProductDetail eCommerceProductDetail = null;
+            while(resultSet.next()) {
+                eCommerceProductDetail = builderECommerceProductDetail(resultSet);
+                list.add(eCommerceProductDetail);
+            }
+            log.info("list size:{}",list.size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(resultSet != null) {
+                    resultSet.close();
+                }
+                if(preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if(connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
 
+    /**
+     * 查询前10w有单品销量和店铺销量的数据。
+     * @return
+     */
+    public List<ECommerceProductDetail> findProductDetailByFeedbackCount(int limit) {
+        List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE feedback_count IS NOT NULL and product_name is not null order by feedback_count desc limit " + limit;
+        log.info("sql:{}",sql);
+        Connection connection = MultiDataSource.getInstance().getConnection(dbName);
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();

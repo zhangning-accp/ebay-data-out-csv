@@ -82,7 +82,7 @@ public class BatchExportDataThread implements Runnable {
         Date date = new Date();
         String startDate = format.format(date);
         log.info("开始执行导出 {} 操作..",dbName);
-        int id = 0;
+        //int id = 0;
         //每50个打包一个zip
         String zipFolder = csvFilePath;
         File file = new File(zipFolder);
@@ -99,12 +99,23 @@ public class BatchExportDataThread implements Runnable {
         ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dbName);
         int realDtatTotal = 0;//实际导出的数据总量
         List<ECommerceProductDetail> list = null;
-        log.info("正在查找销量前10w的数据.....");
-        list = dao.findProductDetailBySoldOrFeedbackCount(100000);
-        log.info("查找数据完成，准备导出为csv，数据数量:{}",list.size());
+        log.info("正在查找单品销量前10w的数据.....");
+        list = dao.findProductDetailBySold(100000);
+        log.info("单品准备导出为csv，数据数量:{}",list.size());
         if(list != null && list.size() > 0) {
             date = new Date();
-            String fileName = zipFolder + format.format(date) + "-" + id + ".csv";
+            String fileName = zipFolder + format.format(date) + "-sold.csv";
+            CsvOut.saveSoldDataToCSV(list, fileName);
+            realDtatTotal += list.size();
+        }
+        list.clear();
+
+        log.info("正在查找店铺销量前10w的数据.....");
+        list = dao.findProductDetailByFeedbackCount(100000);
+        log.info("店铺数据完成，准备导出为csv，数据数量:{}",list.size());
+        if(list != null && list.size() > 0) {
+            date = new Date();
+            String fileName = zipFolder + format.format(date) + "-feedback.csv";
             CsvOut.saveSoldDataToCSV(list, fileName);
             realDtatTotal += list.size();
         }
