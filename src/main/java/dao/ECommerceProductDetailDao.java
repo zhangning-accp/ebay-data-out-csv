@@ -9,11 +9,13 @@ import java.util.Date;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import util.Utils;
 
 /**
  * Created by zn on 2018/6/28.
  */
+@Slf4j
 public class ECommerceProductDetailDao {
     private String dbName;
     public ECommerceProductDetailDao(String fullDBName) {
@@ -70,19 +72,22 @@ public class ECommerceProductDetailDao {
      */
     public List<ECommerceProductDetail> findProductDetailBySoldOrFeedbackCount(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold IS NOT NULL OR feedback_count IS NOT NULL and product_name is not null order by sold,feedback_count desc limit " + limit;
+        log.info("sql:{}",sql);
+
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        String sql = "SELECT id,sold,feedback_count FROM ecommerce_product_detail WHERE sold IS NOT NULL OR feedback_count IS NOT NULL and product_name is not null order by sold,feedback_count desc limit ?";
+
         try {
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1,limit);
             resultSet = preparedStatement.executeQuery();
             ECommerceProductDetail eCommerceProductDetail = null;
             while(resultSet.next()) {
                 eCommerceProductDetail = builderECommerceProductDetail(resultSet);
                 list.add(eCommerceProductDetail);
             }
+            log.info("list size:{}",list.size());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -99,9 +104,6 @@ public class ECommerceProductDetailDao {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        if(list.size() > 0) {
-            list = list.stream().filter(p-> Utils.isNotBlank(p.getProductName())).collect(Collectors.toList());
         }
         return list;
     }
