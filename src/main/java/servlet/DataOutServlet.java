@@ -23,33 +23,9 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
         String action = request.getParameter("action");
         if(action != null) {
             PrintWriter out = response.getWriter();
+            String [] names = null;
             log.info("action:{}",action);
             switch (action) {
-//                case "out_data":
-//                    String dbName = request.getParameter("dbName");
-//                    int startIndex = Integer.parseInt(request.getParameter("startIndex"));
-//                    int count = Integer.parseInt(request.getParameter("count"));
-//                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-//                    Date date = new Date();
-//                    String fileName = ApplicationCache.DEFAULT_CSV_FILE_PATH + format.format(date) + ".csv";
-//                    try {
-//                        CsvOut.saveDataToCsv(startIndex, count, fileName, dbName);
-//                        String zipFileName = fileName.substring(0,fileName.lastIndexOf(".")) + "-" + count + ".zip";
-//                        log.info("Extracting files. Please wait ...");
-//                        ApplicationCache.PROGRESS_BAR.add("Extracting files. Please wait ....");
-//                        Utils.zip(fileName,zipFileName);
-//                        File file = new File(fileName);
-//                        file.delete();
-//                        zipFileName = zipFileName.substring(zipFileName.lastIndexOf("/") + 1);
-//                        ApplicationCache.PROGRESS_BAR.add("Compressed file completion ....");
-//                        log.info("out_data,startIndex:{},count:{}", startIndex, count);
-//                        out.write("export/" + zipFileName);
-//                                return;
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        out.write("error: export data error." + e);
-//                        return;
-//                    }
                 case "delete":
                     String name = request.getParameter("n");
                     String fullDbName = request.getParameter("dn");
@@ -59,13 +35,20 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
                     file.delete();
                     break;
                 case "batch":
-                    String [] names = request.getParameterValues("dbName");
+                    names = request.getParameterValues("dbName");
                     for(String db : names) {
                         Thread thread = new Thread(new BatchExportDataThread(db));
                         thread.setName("batch-export-data-thread-" + db );
                         thread.start();
                     }
                     break;
+                case "sold"://导出销量数据
+                    names = request.getParameterValues("dbName");
+                    Thread thread = new Thread(new BatchExportDataThread(names,BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
+                    thread.setName("batch-export-sold-thread");
+                    thread.start();
+                    break;
+
             }
         }
         response.sendRedirect("index.jsp");

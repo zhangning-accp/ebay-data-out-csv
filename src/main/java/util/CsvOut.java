@@ -69,9 +69,71 @@ public class CsvOut {
         });
         File file = new File(filePath);
         log.info("file path:{}", file.getAbsolutePath());
-        ApplicationCache.PROGRESS_BAR.add("正在导出" + details.size() + "条数据到csv");
+        //ApplicationCache.PROGRESS_BAR.add("正在导出" + details.size() + "条数据到csv");
         Utils.save2File(buffer.toString(), file.getAbsolutePath(), false);
 
+
+    }
+
+    public static void saveSoldDataToCSV(List<ECommerceProductDetail> details,String filePath) {
+        String[] heads = {"id", "ecommerce_category_id", "ecommerce_category_full_path", "url", "product_name",
+                "current_price", "main_picture_url", "category_levels", "product_sub_name", "item_condition",
+                "rest_pictures_url","original_price","item_specifics","product_description","crawler_task_id",
+                "created_time","sort_index","attribute1","attribute2","attribute3","sold","member_id","mbg_link",
+                "feedback_count","feedback_count_link","sold_history_url","crawler_status"};
+        File f = new File(filePath);
+        if(!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
+        StringBuffer buffer = new StringBuffer();
+        for(String head : heads) {
+            buffer.append(head + ",");
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
+        buffer.append(System.lineSeparator());
+        //ApplicationCache.PROGRESS_BAR.add("正在处理" + details.size() + "条数据");
+        details.stream().forEach(p -> {
+            String productName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductName()));
+            String itemSpecifics = Utils.trimToEmpty(p.getItemSpecifics());
+            itemSpecifics = Utils.stripTagsSpace(itemSpecifics);
+            itemSpecifics = Utils.stripBlank(itemSpecifics);
+            itemSpecifics = addSemicolonAtBothEnds(itemSpecifics);
+
+            String restPicturesUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getRestPicturesUrl()));
+            restPicturesUrl = Utils.replacePicSize600(restPicturesUrl);
+
+            String currentPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCurrentPrice())));
+
+            String originalPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getOriginalPrice())));
+
+            String attribute1 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute1())));
+
+            String attribute2 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute2())));
+
+            String attribute3 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute3())));
+
+            String categoryLevels = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCategoryLevels()));
+
+            String mainPictureUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getMainPictureUrl()));
+            mainPictureUrl = Utils.replacePicSize600(mainPictureUrl);
+
+            String url = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getUrl()));
+
+
+
+
+
+            buffer.append(productName + ",").append(itemSpecifics + ",").append(restPicturesUrl + ",")
+                    .append(currentPrice + ",").append(originalPrice + ",").append(attribute1 + ",")
+                    .append(attribute2 + ",").append(attribute3 + ",").append(categoryLevels + ",")
+                    .append(mainPictureUrl + ",").append(url + System.lineSeparator());
+        });
+
+
+        File file = new File(filePath);
+        //log.info("file path:{}", file.getAbsolutePath());
+        //ApplicationCache.PROGRESS_BAR.add("正在导出" + details.size() + "条数据到csv");
+        Utils.save2File(buffer.toString(), file.getAbsolutePath(), false);
 
     }
 

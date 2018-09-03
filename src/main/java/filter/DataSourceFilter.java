@@ -31,6 +31,7 @@ public class DataSourceFilter implements Filter {
         ApplicationCache.REAL_PATH = realPath;
         ApplicationCache.DEFAULT_DATA_SOURCE_XML_FILE_PAH = realPath + "WEB-INF/classes/data-source.xml";
         ApplicationCache.DEFAULT_CSV_FILE_PATH = realPath + File.separator + "export" + File.separator;
+        ApplicationCache.DEFAULT_SOLD_CSV_FILE_PATH = realPath + File.separator + "sold" + File.separator;
 
         System.getProperties().setProperty("logFilesPath", realPath);
         PropertyConfigurator.configure(realPath + "WEB-INF/classes/log4j.properties");
