@@ -145,9 +145,10 @@ public class CsvOut {
 
             String attribute3 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute3())));
 
+            String sold = p.getSold();
+
             String memberId = p.getMemberId();
 
-            String sold = p.getSold();
             if(Utils.isBlank(sold)) {
                 sold = "0";
             }
@@ -169,8 +170,8 @@ public class CsvOut {
                     .append(categoryLevels + ",").append(productSubName + ",").append(itemCondition + ",")
                     .append(restPicturesUrl + ",").append(originalPrice + ",").append(itemSpecifics + ",")
                     .append(productDescription + ",").append(crawlerTaskId + ",").append(createdTime + ",")
-                    .append(attribute1 + ",").append(attribute2 + ",").append(attribute3 + ",").append(memberId + ",")
-                    .append(sold + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
+                    .append(attribute1 + ",").append(attribute2 + ",").append(attribute3 + ",").append(sold + ",")
+                    .append(memberId + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
                     .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
         });
 

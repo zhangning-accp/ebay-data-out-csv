@@ -104,7 +104,7 @@ public class BatchExportDataThread implements Runnable {
         log.info("单品准备导出为csv，数据数量:{}",list.size());
         if(list != null && list.size() > 0) {
             date = new Date();
-            String fileName = zipFolder + format.format(date) + "-sold.csv";
+            String fileName = zipFolder + format.format(date) + "-" + dbName + "-sold.csv";
             CsvOut.saveSoldDataToCSV(list, fileName);
             realDtatTotal += list.size();
         }
@@ -115,7 +115,7 @@ public class BatchExportDataThread implements Runnable {
         log.info("店铺数据完成，准备导出为csv，数据数量:{}",list.size());
         if(list != null && list.size() > 0) {
             date = new Date();
-            String fileName = zipFolder + format.format(date) + "-feedback.csv";
+            String fileName = zipFolder + format.format(date) + "-" + dbName + "-feedback.csv";
             CsvOut.saveSoldDataToCSV(list, fileName);
             realDtatTotal += list.size();
         }
@@ -130,7 +130,7 @@ public class BatchExportDataThread implements Runnable {
         }).collect(Collectors.toList());
         if(csvFiles != null && csvFiles.size() > 0) {
             log.info("开始将csv压缩成zip...");
-            Utils.csvToZip(zipFolder, csvFiles, 50);
+            Utils.csvToZip(zipFolder, csvFiles, dbName,50);
             //---- 压缩结束 ----
             //删除csv文件
             for (File f : csvFiles) {
@@ -214,7 +214,7 @@ public class BatchExportDataThread implements Runnable {
         }).collect(Collectors.toList());
         if(csvFiles != null && csvFiles.size() > 0) {
             //log.info("开始将csv压缩成zip...");
-            Utils.csvToZip(zipFolder, csvFiles, 50);
+            Utils.csvToZip(zipFolder, csvFiles, dbName,50);
             //---- 压缩结束 ----
             //删除csv文件
             for (File f : csvFiles) {

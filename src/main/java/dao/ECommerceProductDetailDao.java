@@ -72,8 +72,8 @@ public class ECommerceProductDetailDao {
      */
     public List<ECommerceProductDetail> findProductDetailBySold(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
-        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold IS NOT NULL and product_name is not null order by sold desc limit " + limit;
-        log.info("sql:{}",sql);
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold is not null and product_name is not null order by REPLACE(sold,',','')+0 desc limit " + limit;
+        log.info("sql :[{}]",sql);
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -112,8 +112,8 @@ public class ECommerceProductDetailDao {
      */
     public List<ECommerceProductDetail> findProductDetailByFeedbackCount(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
-        String sql = "SELECT * FROM ecommerce_product_detail WHERE feedback_count IS NOT NULL and product_name is not null order by feedback_count desc limit " + limit;
-        log.info("sql:{}",sql);
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE feedback_count is not null and product_name is not null order by feedback_count+0 desc limit " + limit;
+        log.info("sql:[{}]",sql);
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -279,12 +279,16 @@ public class ECommerceProductDetailDao {
         eCommerceProductDetail.setMemberId(memberId);
 
         String sold = resultSet.getString("sold");
+        if(Utils.isBlank(sold)){sold = "0";}
+        sold = sold.replaceAll(",","");
         eCommerceProductDetail.setSold(sold);
 
         String mbgLink = resultSet.getString("mbg_link");
         eCommerceProductDetail.setMbgLink(mbgLink);
 
         String feedbackCount = resultSet.getString("feedback_count");
+        if(Utils.isBlank(feedbackCount)){feedbackCount = "0";}
+        feedbackCount = feedbackCount.replaceAll(",","");
         eCommerceProductDetail.setFeedbackCount(feedbackCount);
 
         String feedbackCountLink = resultSet.getString("feedback_count_link");

@@ -631,7 +631,7 @@ public class Utils extends StringUtils {
      *            zip 文件默认已0...n.zip命名
      *
      */
-    public static void csvToZip(String zipFolder,List<File> csvFiles,int rows) {
+    public static void csvToZip(String zipFolder,List<File> csvFiles,String fullDbName,int rows) {
         if(csvFiles == null || csvFiles.size() < 1) {
             return;
         }
@@ -664,7 +664,7 @@ public class Utils extends StringUtils {
                     toIndex = size;
                 }
                 List<String> tmp = files.subList(fromIndex, toIndex);
-                Utils.zip(zipFolder + i + ".zip", tmp.toArray(new String[tmp.size()]));
+                Utils.zip(zipFolder + fullDbName + "-" + i + ".zip", tmp.toArray(new String[tmp.size()]));
             }
         }
 
@@ -674,7 +674,7 @@ public class Utils extends StringUtils {
         String base = "d:/export/docker-1/db1_1/";
         List<File> csvFiles = Utils.allFiles(base).stream()
                 .filter(p->p.getName().endsWith("csv")).collect(Collectors.toList());
-        csvToZip(base,csvFiles,50);
+        csvToZip(base,csvFiles,"",50);
     }
 
     public static void main(String[] args) {
