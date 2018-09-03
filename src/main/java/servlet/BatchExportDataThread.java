@@ -62,9 +62,16 @@ public class BatchExportDataThread implements Runnable {
      * 导出单库所有销量数据
      */
     private void exportSoldData(){
-        log.info("选择了 {} 库,库名:{}",dbNames.length);
+        MultiDataSource dataSource = MultiDataSource.getInstance();
+        List<String> list = new ArrayList<>();
         for(String dbName : dbNames) {
+            list.add(dbName);
+        }
+        log.info("选择了 {} 库,库名:{}",dbNames.length,list);
+        for(String dbName : dbNames) {
+            dataSource.getSimpleDataSource(dbName).setCurrent(true);
             exportSoldData(dbName,ApplicationCache.DEFAULT_SOLD_CSV_FILE_PATH + Utils.getRelativeFilePathByFullDBName(dbName));
+            dataSource.saveExport(dbName);
         }
 
     }
