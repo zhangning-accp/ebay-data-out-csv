@@ -53,23 +53,29 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
                     break;
                 case "sold"://导出销量数据
                     names = request.getParameterValues("dbName");
-                    int threadCount = names.length / 2;
-                    String [] names1 = new String[threadCount];
-                    String [] names2 = new String[threadCount];
-                    for(int i = 0; i < names1.length; i ++) {
-                        names1[i] = names[i];
-                        names2[i] = names[i + threadCount];
+                    for(int i = 0; i < names.length; i ++) {
+                        String [] tmpNames = new String[1];
+                        tmpNames[0] = names[i];
+                        Thread thread = new Thread(new BatchExportDataThread(tmpNames, BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
+                        thread.setName("batch-export-sold-thread-" + i);
+                        thread.start();
                     }
-                    Thread thread1 = new Thread(new BatchExportDataThread(names1, BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
-                    thread1.setName("batch-export-sold-thread-1");
-                    thread1.start();
-
-                    Thread thread2 = new Thread(new BatchExportDataThread(names2, BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
-                    thread2.setName("batch-export-sold-thread-2");
-                    thread2.start();
+//                    int threadCount = names.length / 2;
+//                    String [] names1 = new String[threadCount];
+//                    String [] names2 = new String[threadCount];
+//                    for(int i = 0; i < names1.length; i ++) {
+//                        names1[i] = names[i];
+//                        names2[i] = names[i + threadCount];
+//                    }
+//                    Thread thread1 = new Thread(new BatchExportDataThread(names1, BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
+//                    thread1.setName("batch-export-sold-thread-1");
+//                    thread1.start();
+//
+//                    Thread thread2 = new Thread(new BatchExportDataThread(names2, BatchExportDataThread.BATCH_EXPORT_SOLD_DATA));
+//                    thread2.setName("batch-export-sold-thread-2");
+//                    thread2.start();
 
                     break;
-
             }
         }
         response.sendRedirect("index.jsp");

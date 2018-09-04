@@ -85,11 +85,11 @@
               obj.disabled = false;
               return false;
           }
-//          if(dbName.length > 2) {
-//              alert("只能选择2个库，您选择了" + dbName.length);
-//              obj.disabled = false;
-//              return false;
-//          }
+          if(dbName.length > 4) {
+              alert("只能选择4个库，您选择了" + dbName.length);
+              obj.disabled = false;
+              return false;
+          }
           // 发送ajax请求
           var parameter = "action=sold";
           for(i = 0; i < dbName.length; i ++) {

@@ -110,7 +110,7 @@ public class BatchExportDataThread implements Runnable {
         int realDtatTotal = 0;//实际导出的数据总量
         List<ECommerceProductDetail> list = null;
         // ------------ 导出单品销量数据 ----------------------------
-        log.info("正在查找单品销量前10w的数据.....");
+        log.info("正在查找{}单品销量前10w的数据.....",dbName);
         list = dao.findProductDetailBySold(100000);
         log.info("单品准备导出为csv，数据数量:{}",list.size());
         if(list != null && list.size() > 0) {
@@ -121,16 +121,16 @@ public class BatchExportDataThread implements Runnable {
         }
         list.clear();
         //---------------------- 导出店铺销量数据 -----------------------
-        log.info("正在查找店铺销量前10w的数据.....");
+        log.info("正在查找{}店铺销量前10w的数据.....",dbName);
         list = dao.findProductDetailByFeedbackCount(100000);
-        log.info("店铺数据完成，准备导出为csv，数据数量:{}",list.size());
+        log.info("{}店铺数据完成，准备导出为csv，数据数量:{}",dbName,list.size());
         if(list != null && list.size() > 0) {
             date = new Date();
             String fileName = zipFolder + format.format(date) + "-" + dbName + "-feedback.csv";
             CsvOut.saveSoldDataToCSV(list, fileName);
             realDtatTotal += list.size();
         }
-        log.info("数据导出csv完毕...");
+        log.info("数据导出csv完毕...{}",dbName);
         list.clear();
         //2. 读取目录下的文件，
         List<File> csvFiles = Utils.csvFiles(zipFolder);
@@ -140,7 +140,7 @@ public class BatchExportDataThread implements Runnable {
             return d2.compareTo(d1);
         }).collect(Collectors.toList());
         if(csvFiles != null && csvFiles.size() > 0) {
-            log.info("开始将csv压缩成zip...");
+            log.info("开始将{} csv压缩成zip...",dbName);
             Utils.csvToZip(zipFolder, csvFiles, dbName,50);
             //---- 压缩结束 ----
             //删除csv文件
@@ -151,7 +151,7 @@ public class BatchExportDataThread implements Runnable {
         date = new Date();
         String finishedDate = format.format(date);
         long end = System.currentTimeMillis();
-        log.info("发送邮件...");
+        log.info("发送邮件...{}",dbName);
         EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished",
                 "realDtatTotal:" + realDtatTotal
                 + ", start date:" + startDate +
