@@ -210,7 +210,7 @@
                               }
                               out.write("<td><a href=" + downloadUrl + ">" + fileName + "(" + length + "KB)</a></td>");
                               out.write("<td>" + date + "</td>");
-                              out.write("<td><a href=home.jsp?action=delete&n=" + fileName + "&dn=" + key + ">删除</a></td>");
+                              out.write("<td><a href=home.jsp?action=ds&n=" + fileName + "&dn=" + key + ">删除</a></td>");
                               out.write("</tr>");
                         }
                       }

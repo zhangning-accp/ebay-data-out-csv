@@ -72,7 +72,8 @@ public class ECommerceProductDetailDao {
      */
     public List<ECommerceProductDetail> findProductDetailBySold(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
-        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold is not null and product_name is not null order by REPLACE(sold,',','')+0 desc limit " + limit;
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE sold is not null and product_name is not null " +
+                "order by REPLACE(sold,',','')+0 desc limit " + limit;
         log.info("sql :[{}]",sql);
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
@@ -112,7 +113,8 @@ public class ECommerceProductDetailDao {
      */
     public List<ECommerceProductDetail> findProductDetailByFeedbackCount(int limit) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
-        String sql = "SELECT * FROM ecommerce_product_detail WHERE feedback_count is not null and product_name is not null order by feedback_count+0 desc limit " + limit;
+        String sql = "SELECT * FROM ecommerce_product_detail WHERE feedback_count is not null " +
+                "and product_name is not null order by feedback_count+0 desc limit " + limit;
         log.info("sql:[{}]",sql);
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
@@ -146,20 +148,31 @@ public class ECommerceProductDetailDao {
         return list;
     }
     public int [] findMinAndMaxSortIndex() {
+        String sql = "SELECT MIN(sort_index) AS min_index,MAX(sort_index) AS max_index FROM ecommerce_product_detail";
+        return findMinAndMaxSortIndex(sql);
+    }
+
+
+//    private List<int []> finMinAndMaxSortIndex(){
+//        String sql = "";
+//
+//    }
+
+    private int [] findMinAndMaxSortIndex(String sql) {
         List<ECommerceProductDetail> list = new ArrayList<ECommerceProductDetail>();
         Connection connection = MultiDataSource.getInstance().getConnection(dbName);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         int [] minMax = new int[2];
-        String sql = "SELECT MIN(sort_index) AS min_index,MAX(sort_index) AS max_index FROM ecommerce_product_detail";
+        //String sql = "SELECT MIN(sort_index) AS min_index,MAX(sort_index) AS max_index FROM ecommerce_product_detail";
         try {
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
-               int min = resultSet.getInt("min_index");
-               int max = resultSet.getInt("max_index");
-               minMax[0] = min;
-               minMax[1] = max;
+                int min = resultSet.getInt("min_index");
+                int max = resultSet.getInt("max_index");
+                minMax[0] = min;
+                minMax[1] = max;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -180,6 +193,8 @@ public class ECommerceProductDetailDao {
         }
         return minMax;
     }
+
+
 
     public int findCountIsProductNameNotNull() {
         String sql = "select count(1) as data_total from ecommerce_product_detail where product_name is not null";

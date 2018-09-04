@@ -167,7 +167,7 @@ public class MultiDataSource {
                     hikariDataSource.setJdbcUrl(url);
                     hikariDataSource.setUsername(userName);
                     hikariDataSource.setPassword(password);
-                    hikariDataSource.setConnectionTestQuery("select count(1) from crawler_machine");
+                    //hikariDataSource.setConnectionTestQuery("select count(1) from crawler_machine");
                     hikariDataSource.setDriverClassName(driverClass);
                     hikariDataSource.setMaximumPoolSize(10);
                     hikariDataSource.setMinimumIdle(1);

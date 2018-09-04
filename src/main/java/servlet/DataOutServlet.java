@@ -26,13 +26,22 @@ public class DataOutServlet extends javax.servlet.http.HttpServlet {
             String [] names = null;
             log.info("action:{}",action);
             switch (action) {
-                case "delete":
+                case "delete"://删除export下的文件
                     String name = request.getParameter("n");
                     String fullDbName = request.getParameter("dn");
                     String dbFolder = Utils.getRelativeFilePathByFullDBName(fullDbName);
                     String deltePath = ApplicationCache.DEFAULT_CSV_FILE_PATH + dbFolder + name;
                     File file = new File(deltePath);
                     file.delete();
+                    break;
+                case "ds"://删除sold下的文件
+                     name = request.getParameter("n");
+                     fullDbName = request.getParameter("dn");
+                     dbFolder = Utils.getRelativeFilePathByFullDBName(fullDbName);
+                     deltePath = ApplicationCache.DEFAULT_SOLD_CSV_FILE_PATH + dbFolder + name;
+                     file = new File(deltePath);
+                     file.delete();
+                    response.sendRedirect("sold.jsp");
                     break;
                 case "batch":
                     names = request.getParameterValues("dbName");

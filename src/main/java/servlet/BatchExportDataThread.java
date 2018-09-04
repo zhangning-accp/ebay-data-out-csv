@@ -106,6 +106,7 @@ public class BatchExportDataThread implements Runnable {
         ECommerceProductDetailDao dao = new ECommerceProductDetailDao(dbName);
         int realDtatTotal = 0;//实际导出的数据总量
         List<ECommerceProductDetail> list = null;
+        // ------------ 导出单品销量数据 ----------------------------
         log.info("正在查找单品销量前10w的数据.....");
         list = dao.findProductDetailBySold(100000);
         log.info("单品准备导出为csv，数据数量:{}",list.size());
@@ -116,7 +117,7 @@ public class BatchExportDataThread implements Runnable {
             realDtatTotal += list.size();
         }
         list.clear();
-
+        //---------------------- 导出店铺销量数据 -----------------------
         log.info("正在查找店铺销量前10w的数据.....");
         list = dao.findProductDetailByFeedbackCount(100000);
         log.info("店铺数据完成，准备导出为csv，数据数量:{}",list.size());
@@ -150,7 +151,7 @@ public class BatchExportDataThread implements Runnable {
         log.info("发送邮件...");
         EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished",
                 "realDtatTotal:" + realDtatTotal
-                + "start date:" + startDate +
+                + ", start date:" + startDate +
                         ", finished date:" + finishedDate +
                         ",elapsed time:" + (end - start) /1000 + "s");
 
@@ -232,7 +233,7 @@ public class BatchExportDataThread implements Runnable {
         String finishedDate = format.format(date);
         EmailUtils.sendEmail("909604945@qq.com","Database " + dbName + " export finished ","dataTotal:" + dataTotal +
                 ",realDtatTotal:" + realDtatTotal + ",difference value:" + (realDtatTotal - dataTotal)
-        + "start date:" + startDate + ", finished date:" + finishedDate);
+        + ", start date:" + startDate + ", finished date:" + finishedDate);
         log.info("export {} data finished... dataTotal:{}, realDtatTotal:{},datatime:{}, folder path : {}",
                 dbName,dataTotal,realDtatTotal,format.format(new Date()),zipFolder);
     }

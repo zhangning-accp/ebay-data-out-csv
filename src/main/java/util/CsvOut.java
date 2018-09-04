@@ -83,6 +83,12 @@ public class CsvOut {
                 "rest_pictures_url","original_price","item_specifics","product_description","crawler_task_id",
                 "created_time","attribute1","attribute2","attribute3","sold","member_id","mbg_link",
                 "feedback_count","feedback_count_link","sold_history_url","crawler_status"};
+
+//        String[] heads = {"id", "ecommerce_category_id","ecommerce_category_full_path", "url","product_name",
+//                "current_price", "main_picture_url", "category_levels","item_condition",
+//                "rest_pictures_url","original_price","item_specifics","product_description","crawler_task_id",
+//                "created_time","attribute1","attribute2","attribute3","sold","member_id","mbg_link",
+//                "feedback_count","feedback_count_link","sold_history_url","crawler_status"};
         File f = new File(filePath);
         if(!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
@@ -93,7 +99,6 @@ public class CsvOut {
         }
         buffer.deleteCharAt(buffer.lastIndexOf(","));
         buffer.append(System.lineSeparator());
-        //ApplicationCache.PROGRESS_BAR.add("正在处理" + details.size() + "条数据");
         details.stream().forEach(p -> {
             String id = p.getId();
             String eCommerceCategoryId = p.getECommerceCategoryId();
@@ -111,7 +116,7 @@ public class CsvOut {
 
             String categoryLevels = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCategoryLevels()));
 
-            String productSubName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductSubName()));
+           String productSubName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductSubName()));
 
 
             String itemCondition = Utils.trimToEmpty(p.getItemCondition());
@@ -163,6 +168,14 @@ public class CsvOut {
             String soldHistoryUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getSoldHistoryUrl()));
 
             int crawlerStatus = BooleanUtils.toInteger(p.isCrawlerStatus());
+//            buffer.append(id + ",").append(eCommerceCategoryId + ",").append(eCommerceCategoryFullPath + ",")
+//                    .append(url + ",").append(productName + ",").append(currentPrice + ",").append(mainPictureUrl + ",")
+//                    .append(categoryLevels + ",").append(itemCondition + ",")
+//                    .append(restPicturesUrl + ",").append(originalPrice + ",").append(itemSpecifics + ",")
+//                    .append(productDescription + ",").append(crawlerTaskId + ",").append(createdTime + ",")
+//                    .append(attribute1 + ",").append(attribute2 + ",").append(attribute3 + ",").append(sold + ",")
+//                    .append(memberId + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
+//                    .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
 
 
             buffer.append(id + ",").append(eCommerceCategoryId + ",").append(eCommerceCategoryFullPath + ",")
@@ -177,16 +190,14 @@ public class CsvOut {
 
 
         File file = new File(filePath);
-        //log.info("file path:{}", file.getAbsolutePath());
-        //ApplicationCache.PROGRESS_BAR.add("正在导出" + details.size() + "条数据到csv");
         Utils.save2File(buffer.toString(), file.getAbsolutePath(), false);
 
     }
 
-    private static String replaceComma(String str) {
-        return str.replace(",","\",\"");
-    }
-
+//    private static String replaceComma(String str) {
+//        return str.replace(",","\",\"");
+//    }
+//
     /**
      * 在传入的字符串两头加 " 号.如果原字符串里有" 符号，则替换为'符号。
      * @param str
