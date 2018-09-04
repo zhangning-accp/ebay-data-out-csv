@@ -97,6 +97,7 @@ public class Utils extends StringUtils {
             }
             writer.write(content);
             writer.close();
+            log.info("writer file end .... {}", file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

@@ -1,4 +1,7 @@
 import dao.MultiDataSource;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import util.CsvOut;
 import util.Utils;
@@ -35,15 +38,35 @@ public class Test {
         return str;
     }
     public static void main(String [] args) {
-        String [] names = {"1","2","3","4","5","6"};
-        int threadCount = names.length / 2;
-        String [] name1 = new String[threadCount];
-        String [] name2 = new String[threadCount];
-        for(int i = 0; i < name1.length; i ++) {
-            name1[i] = names[i];
-            name2[i] = names[i + threadCount];
+        String[] heads = {"id", "ecommerce_category_id","ecommerce_category_full_path", "url", "product_name",
+                "current_price", "main_picture_url", "category_levels", "product_sub_name", "item_condition",
+                "rest_pictures_url","original_price","item_specifics","product_description","crawler_task_id",
+                "created_time","attribute1","attribute2","attribute3","sold","member_id","mbg_link",
+                "feedback_count","feedback_count_link","sold_history_url","crawler_status"};
+        StringBuffer buffer = new StringBuffer();
+        for(String head : heads) {
+            buffer.append(head + ",");
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
+        int end = buffer.length();
+        System.out.println("1 end length:" + end);
+        buffer.append(System.lineSeparator());
+        end = buffer.length();
+        System.out.println("2 end length:" + end);
+        for(int i = 0; i < 10; i ++) {
+            for (int j = 0; j < 10; j++) {
+                buffer.append("[" + i + "-" +j + "]");
+            }
+            buffer.append(System.lineSeparator());
+            try {
+                FileWriter writer = new FileWriter("d:/t.txt", true);
+                writer.write(buffer.toString());
+                buffer.delete(0, end);
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        System.out.println("end");
     }
 }

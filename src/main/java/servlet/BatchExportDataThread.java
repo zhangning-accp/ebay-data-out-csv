@@ -112,7 +112,7 @@ public class BatchExportDataThread implements Runnable {
         // ------------ 导出单品销量数据 ----------------------------
         log.info("正在查找{}单品销量前10w的数据.....",dbName);
         list = dao.findProductDetailBySold(100000);
-        log.info("单品准备导出为csv，数据数量:{}",list.size());
+        log.info("{}单品准备导出为csv，数据数量:{}",dbName,list.size());
         if(list != null && list.size() > 0) {
             date = new Date();
             String fileName = zipFolder + format.format(date) + "-" + dbName + "-sold.csv";
