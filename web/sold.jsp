@@ -85,15 +85,17 @@
               obj.disabled = false;
               return false;
           }
-          if(dbName.length > 4) {
-              alert("只能选择4个库，您选择了" + dbName.length);
-              obj.disabled = false;
-              return false;
-          }
+//          if(dbName.length > 4) {
+//              alert("只能选择4个库，您选择了" + dbName.length);
+//              obj.disabled = false;
+//              return false;
+//          }
           // 发送ajax请求
           var parameter = "action=sold";
           for(i = 0; i < dbName.length; i ++) {
-              parameter += "&dbName=" + dbName[i].value;
+              if(dbName[i].disabled == false && dbName[i].checked == true) {
+                  parameter += "&dbName=" + dbName[i].value;
+              }
           }
           $.get("home.jsp",parameter,function(data){
               alert("服务器已接受导出任务...");

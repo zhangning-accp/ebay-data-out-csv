@@ -101,8 +101,9 @@ public class CsvOut {
         buffer.append(System.lineSeparator());
         int end = buffer.length();
         log.info("开始循环数据，拼装 buffer ...... {}",filePath);
-        if(details.size() > 20000) {
-            int loop = details.size() / 20000;
+        int base = 5000;
+        if(details.size() > base) {
+            int loop = details.size() / base;
             for(int i = 0; i < loop; i ++) {
                 ECommerceProductDetail p = details.get(i);
                 String id = p.getId();
