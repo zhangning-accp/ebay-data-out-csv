@@ -73,7 +73,8 @@ public class BatchExportDataThread implements Runnable {
             dataSource.getSimpleDataSource(dbName).setCurrent(true);
             exportSoldData(dbName,ApplicationCache.DEFAULT_SOLD_CSV_FILE_PATH + Utils.getRelativeFilePathByFullDBName(dbName));
             dataSource.saveExport(dbName);
-            //dataSource.getSimpleDataSource(dbName).setExport(true);
+            dataSource.getSimpleDataSource(dbName).setExport(true);
+            dataSource.getSimpleDataSource(dbName).setCurrent(false);
         }
 
     }

@@ -35,7 +35,15 @@ public class Test {
         return str;
     }
     public static void main(String [] args) {
+        String [] names = {"1","2","3","4","5","6"};
+        int threadCount = names.length / 2;
+        String [] name1 = new String[threadCount];
+        String [] name2 = new String[threadCount];
+        for(int i = 0; i < name1.length; i ++) {
+            name1[i] = names[i];
+            name2[i] = names[i + threadCount];
+        }
 
-        zipFile();
+        System.out.println("end");
     }
 }

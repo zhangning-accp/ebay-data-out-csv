@@ -188,7 +188,7 @@ public class CsvOut {
                     .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
         });
 
-
+        log.info("buffer 准备完毕.... 准备写入文件......{}",filePath);
         File file = new File(filePath);
         Utils.save2File(buffer.toString(), file.getAbsolutePath(), false);
 
