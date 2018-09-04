@@ -34,21 +34,21 @@ public class MultiDataSource {
     private long newLastModify = 0;
 
     private MultiDataSource() {
-//        new Thread(()->{
-//            while(true) {
-//                if (checkChange()) {
+        new Thread(()->{
+            while(true) {
+                if (checkChange()) {
                     log.warn("data sourde is change, reloading ..... ");
                     readerXMLBuilderDataSources();
                     initPoolDataSourceMap();
                     log.warn("data sourde reloading finished ..... ");
-//                }
-//                try {
-//                    Thread.sleep(1 * 1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+                }
+                try {
+                    Thread.sleep(60 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public static MultiDataSource getInstance() {

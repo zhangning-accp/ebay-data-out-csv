@@ -16,7 +16,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>批量导出</title>
+    <title>销量数据批量导出</title>
       <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
       <link href="css/button.css" rel="stylesheet">
       <link href="http://www.bootcss.com/p/layoutit/css/layoutit.css" rel="stylesheet">
@@ -122,8 +122,8 @@
   </script>
   <div class="list-group">
       <a href="#" class="list-group-item active">
-          <h4 class="list-group-item-heading">欢迎使用Ebay 批量数据导出功能</h4>
-          <p class="list-group-item-text">该网页提供方便快捷的数据导出,选择需要导出的数据库即可，一次最多只能选择2个库</p>
+          <h4 class="list-group-item-heading">欢迎使用Ebay 销量数据批量导出功能</h4>
+          <p class="list-group-item-text">该网页提供方便快捷的数据导出</p>
       </a>
   </div>
   <div class="container-fluid">
@@ -133,7 +133,7 @@
           <div class="span6">
               <%--<form>--%>
                   <fieldset>
-                      <legend>选择对应的数据库导出数据，一次最多只能导2个库</legend>
+                      <legend>选择对应的数据库导出数据</legend>
                       <%
                           Map<String, List<DataSource>> dataSourceString = (Map)application.getAttribute("dataSource");
                           Iterator<String> iterator = dataSourceString.keySet().iterator();
@@ -168,7 +168,7 @@
                   </fieldset>
               <%--</form>--%>
                   <div class="alert alert-success" role="alert" style="color:darkorange;">
-                      系统默认2w个数据一个csv文件，并会每50个csv文件压缩成一个zip文件供下载使用
+                      系统将导出单品销量前10w和店铺销量前10w的数据，并合并成一个zip文件供下载使用
                   </div>
               <span class="help-block">导出记录</span>
               <table class="table">
