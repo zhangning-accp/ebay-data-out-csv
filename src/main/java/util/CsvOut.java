@@ -99,95 +99,19 @@ public class CsvOut {
         }
         buffer.deleteCharAt(buffer.lastIndexOf(","));
         buffer.append(System.lineSeparator());
-        int end = buffer.length();
-        log.info("开始循环数据，拼装 buffer ...... {}",filePath);
         int base = 5000;
-        if(details.size() > base) {
-            int loop = details.size() / base;
-            for(int i = 0; i < loop; i ++) {
-                ECommerceProductDetail p = details.get(i);
-                String id = p.getId();
-                String eCommerceCategoryId = p.getECommerceCategoryId();
-
-                String eCommerceCategoryFullPath = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getEcommerceCategoryFullPath()));
-
-                String url = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getUrl()));
-
-                String productName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductName()));
-
-                String currentPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCurrentPrice())));
-
-                String mainPictureUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getMainPictureUrl()));
-                mainPictureUrl = Utils.replacePicSize600(mainPictureUrl);
-
-                String categoryLevels = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCategoryLevels()));
-
-                String productSubName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductSubName()));
-
-
-                String itemCondition = Utils.trimToEmpty(p.getItemCondition());
-                itemCondition = Utils.stripTagsSpace(itemCondition);
-                itemCondition = Utils.stripBlank(itemCondition);
-                itemCondition = addSemicolonAtBothEnds(itemCondition);
-
-
-                String restPicturesUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getRestPicturesUrl()));
-                restPicturesUrl = Utils.replacePicSize600(restPicturesUrl);
-
-                String originalPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getOriginalPrice())));
-
-                String itemSpecifics = Utils.trimToEmpty(p.getItemSpecifics());
-                itemSpecifics = Utils.stripTagsSpace(itemSpecifics);
-                itemSpecifics = Utils.stripBlank(itemSpecifics);
-                itemSpecifics = addSemicolonAtBothEnds(itemSpecifics);
-
-                String productDescription = Utils.trimToEmpty(p.getProductDescription());
-                productDescription = Utils.stripTagsSpace(productDescription);
-                productDescription = Utils.stripBlank(productDescription);
-                productDescription = addSemicolonAtBothEnds(productDescription);
-
-                String crawlerTaskId = p.getCrawlerTaskId();
-
-                Date createdTime = p.getCreatedTime();
-
-                String attribute1 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute1())));
-
-                String attribute2 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute2())));
-
-                String attribute3 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute3())));
-
-                String sold = p.getSold();
-
-                String memberId = p.getMemberId();
-
-                if(Utils.isBlank(sold)) {
-                    sold = "0";
-                }
-                String mbgLink = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getMbgLink()));
-
-                String feedbackCount = p.getFeedbackCount();
-                if(Utils.isBlank(feedbackCount)) {
-                    feedbackCount = "0";
-                }
-                String feedbackCountLink = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getFeedbackCountLink()));
-
-                String soldHistoryUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getSoldHistoryUrl()));
-
-                int crawlerStatus = BooleanUtils.toInteger(p.isCrawlerStatus());
-
-                buffer.append(id + ",").append(eCommerceCategoryId + ",").append(eCommerceCategoryFullPath + ",")
-                        .append(url + ",").append(productName + ",").append(currentPrice + ",").append(mainPictureUrl + ",")
-                        .append(categoryLevels + ",").append(productSubName + ",").append(itemCondition + ",")
-                        .append(restPicturesUrl + ",").append(originalPrice + ",").append(itemSpecifics + ",")
-                        .append(productDescription + ",").append(crawlerTaskId + ",").append(createdTime + ",")
-                        .append(attribute1 + ",").append(attribute2 + ",").append(attribute3 + ",").append(sold + ",")
-                        .append(memberId + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
-                        .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
-
-                File file = new File(filePath);
-                Utils.save2File(buffer.toString(), file.getAbsolutePath(), false);
-                buffer.delete(0,end);
+        while(details.size() > 0) {
+            List<ECommerceProductDetail> save2FileList = details.subList(0, base);
+            log.info("开始循环数据，拼装 buffer ......，save2FileList size: {}, {}",save2FileList.size(),filePath);
+            for (int i = 0; i < save2FileList.size(); i++) {
+                ECommerceProductDetail p = save2FileList.get(i);
+                builderSoldString(buffer, p);
             }
+            details.removeAll(save2FileList);
+            log.info("details size:{}",details.size());
+            File file = new File(filePath);
+            Utils.save2File(buffer.toString(), file.getAbsolutePath(), true);
+            buffer.delete(0, buffer.length());
         }
 
 //        details.stream().forEach(p -> {
@@ -278,10 +202,86 @@ public class CsvOut {
 //                    .append(memberId + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
 //                    .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
 //        });
+    }
 
-        log.info("buffer 准备完毕.... 准备写入文件......{}",filePath);
+    private static void builderSoldString(final StringBuffer buffer, final ECommerceProductDetail p) {
+        String id = p.getId();
+        String eCommerceCategoryId = p.getECommerceCategoryId();
+
+        String eCommerceCategoryFullPath = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getEcommerceCategoryFullPath()));
+
+        String url = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getUrl()));
+
+        String productName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductName()));
+
+        String currentPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCurrentPrice())));
+
+        String mainPictureUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getMainPictureUrl()));
+        mainPictureUrl = Utils.replacePicSize600(mainPictureUrl);
+
+        String categoryLevels = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getCategoryLevels()));
+
+        String productSubName = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getProductSubName()));
 
 
+        String itemCondition = Utils.trimToEmpty(p.getItemCondition());
+        itemCondition = Utils.stripTagsSpace(itemCondition);
+        itemCondition = Utils.stripBlank(itemCondition);
+        itemCondition = addSemicolonAtBothEnds(itemCondition);
+
+
+        String restPicturesUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getRestPicturesUrl()));
+        restPicturesUrl = Utils.replacePicSize600(restPicturesUrl);
+
+        String originalPrice = Utils.leaveThePrice(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getOriginalPrice())));
+
+        String itemSpecifics = Utils.trimToEmpty(p.getItemSpecifics());
+        itemSpecifics = Utils.stripTagsSpace(itemSpecifics);
+        itemSpecifics = Utils.stripBlank(itemSpecifics);
+        itemSpecifics = addSemicolonAtBothEnds(itemSpecifics);
+
+        String productDescription = Utils.trimToEmpty(p.getProductDescription());
+        productDescription = Utils.stripTagsSpace(productDescription);
+        productDescription = Utils.stripBlank(productDescription);
+        productDescription = addSemicolonAtBothEnds(productDescription);
+
+        String crawlerTaskId = p.getCrawlerTaskId();
+
+        Date createdTime = p.getCreatedTime();
+
+        String attribute1 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute1())));
+
+        String attribute2 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute2())));
+
+        String attribute3 = Utils.stripOutOfStock(addSemicolonAtBothEnds(Utils.trimToEmpty(p.getAttribute3())));
+
+        String sold = p.getSold();
+
+        String memberId = p.getMemberId();
+
+        if(Utils.isBlank(sold)) {
+            sold = "0";
+        }
+        String mbgLink = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getMbgLink()));
+
+        String feedbackCount = p.getFeedbackCount();
+        if(Utils.isBlank(feedbackCount)) {
+            feedbackCount = "0";
+        }
+        String feedbackCountLink = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getFeedbackCountLink()));
+
+        String soldHistoryUrl = addSemicolonAtBothEnds(Utils.trimToEmpty(p.getSoldHistoryUrl()));
+
+        int crawlerStatus = BooleanUtils.toInteger(p.isCrawlerStatus());
+
+        buffer.append(id + ",").append(eCommerceCategoryId + ",").append(eCommerceCategoryFullPath + ",")
+                .append(url + ",").append(productName + ",").append(currentPrice + ",").append(mainPictureUrl + ",")
+                .append(categoryLevels + ",").append(productSubName + ",").append(itemCondition + ",")
+                .append(restPicturesUrl + ",").append(originalPrice + ",").append(itemSpecifics + ",")
+                .append(productDescription + ",").append(crawlerTaskId + ",").append(createdTime + ",")
+                .append(attribute1 + ",").append(attribute2 + ",").append(attribute3 + ",").append(sold + ",")
+                .append(memberId + ",").append(mbgLink + ",").append(feedbackCount + ",").append(feedbackCountLink + ",")
+                .append(soldHistoryUrl + ",").append(crawlerStatus + System.lineSeparator());
     }
 
 //    private static String replaceComma(String str) {
